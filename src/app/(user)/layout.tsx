@@ -13,7 +13,7 @@ const LayoutUser = ({
     return (
         <Box>
             <Header />
-            <Box pt={16} as="main">
+            <Box pt={16} h={'100vh'} as="main">
                 {children}
             </Box>
         </Box>

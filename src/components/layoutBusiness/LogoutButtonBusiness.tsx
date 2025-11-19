@@ -1,7 +1,7 @@
 import { create } from '@/apis/apiCore';
 import { broadcastAuthEvent, clearAccessToken } from '@/libs/tokenMemory';
 import { useSocket } from '@/providers/SocketProvider';
-import { useUserBusiness } from '@/providers/UserProvider';
+import { useUserBusiness } from '@/providers/UserBusinessProvider';
 import { Button } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation';
 import React from 'react'

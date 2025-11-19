@@ -39,24 +39,3 @@ export const registerBusiness = async (payload: { email: string, password: strin
     return { success: true }
 
 }
-
-interface ResponseLogin {
-    accessToken: string;
-    sessionId: string;
-    message: string;
-}
-
-
-export const loginBusiness = async (payload: { email: string, password: string, rememberMe: boolean, fingerprint: any, fingerprintHash: string, fcmToken?: string }) => {
-    if (isValidText(payload.email) || isValidText(payload.password)) {
-        return { success: false, message: "Nhập đầy đủ thông tin" }
-    }
-
-    const res = await create<ResponseLogin>("/auth/business/login", payload)
-    if (!res.success) {
-        return { success: false, message: res.error }
-    }
-
-    return {success: true, message: res.result.message}
-
-}

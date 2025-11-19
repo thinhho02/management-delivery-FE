@@ -4,11 +4,10 @@ import { create } from '@/apis/apiCore'
 import LinkCustom from '@/components/ui/LinkCustom'
 import { toaster } from '@/components/ui/toaster'
 import { getLiteFingerprint } from '@/libs/getLiteFingerprint'
-import { AUTH_EVENT_STORAGE_KEY, broadcastAuthEvent } from '@/libs/tokenMemory'
 import { Box, Button, Checkbox, Field, Fieldset, Heading, HStack, Input, InputGroup, Text } from '@chakra-ui/react'
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LuEye, LuEyeClosed } from 'react-icons/lu'
 import z from 'zod'
@@ -45,29 +44,6 @@ const LoginForm = () => {
             rememberMe: false
         },
     })
-    // Lắng nghe sự kiện storage để đồng bộ nhiều tab
-    useEffect(() => {
-        const handler = (e: StorageEvent) => {
-            if (e.key !== AUTH_EVENT_STORAGE_KEY || !e.newValue) return;
-
-            const event = JSON.parse(e.newValue) as {
-                type: "LOGIN" | "LOGOUT" | "FORCE_LOGOUT";
-                time: number;
-            };
-
-            if (event.type === "LOGIN") {
-                // Tab khác login → revalidate user
-                router.replace("/console")
-            }
-
-        };
-
-        window.addEventListener("storage", handler);
-
-        return () => {
-            window.removeEventListener("storage", handler);
-        };
-    }, []);
 
 
     const submitForm = handleSubmit(async (data) => {

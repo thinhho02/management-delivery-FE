@@ -7,7 +7,7 @@ import { RiArrowDropRightFill } from 'react-icons/ri'
 import { FiSidebar } from 'react-icons/fi';
 import { ColorModeButton } from '../ui/color-mode'
 import LinkCustom from '../ui/LinkCustom'
-import { useUserBusiness } from '@/providers/UserProvider'
+import { useUserBusiness } from '@/providers/UserBusinessProvider'
 import LogoutButtonBusiness from './LogoutButtonBusiness'
 
 
@@ -61,9 +61,6 @@ const AsideBusiness = () => {
 
                         <VStack align="start">
                             {items.map((item) => {
-                                // const lastPathname = pathname.split("/").filter(Boolean).at(-1) as string;
-                                // const lastItemHref = item.href.split("/").filter(Boolean).at(-1) as string
-                                // const isActive = lastPathname === lastItemHref
                                 const isActive =
                                     (item.href === '/console' && pathname === '/console') || // chỉ sáng khi đúng trang index
                                     (item.href !== '/console' && pathname.startsWith(item.href));

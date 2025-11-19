@@ -2,7 +2,7 @@
 
 import { createContext, RefObject, useContext, useEffect, useMemo, useRef, useState } from "react";
 import socketInstance from "@/apis/wsConfig";
-import { useUserBusiness } from "./UserProvider";
+import { useUserBusiness } from "./UserBusinessProvider";
 
 
 
@@ -37,7 +37,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         socketInstance.on("connect", () => {
             console.log("Socket connected:", socketInstance.id);
             console.log(user)
-            if (user.isTrusted) {
+            if (user && user.isTrusted) {
                 socketInstance.emit("join:room_session", { sessionId: user.sid })
             }
             setIsConnected(true);

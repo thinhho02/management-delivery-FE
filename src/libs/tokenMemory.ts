@@ -17,7 +17,7 @@ export function clearAccessToken() {
 /**
  * Broadcast event cho các tab khác, KHÔNG gửi token, chỉ gửi type
  */
-export function broadcastAuthEvent(type: "LOGIN" | "LOGOUT" | "FORCE_LOGOUT") {
+export function broadcastAuthEvent(type: "LOGIN_B" | "LOGIN_I" | "LOGOUT" | "FORCE_LOGOUT") {
   try {
     localStorage.setItem(
       AUTH_EVENT_KEY,

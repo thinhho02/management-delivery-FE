@@ -69,7 +69,7 @@ API.interceptors.response.use(
 
       try {
 
-        const res = await axios.get(`${originBackend}/auth/refresh-token`, { withCredentials: true })
+        const res = await axios.get(`${originBackend}/api/auth/refresh-token`, { withCredentials: true })
         
         const newAccessToken: string = res.data.accessToken;
         // Lưu token mới vào localStorage
