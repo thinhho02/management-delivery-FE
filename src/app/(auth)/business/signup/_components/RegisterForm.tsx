@@ -1,0 +1,225 @@
+'use client'
+
+import { registerBusiness } from '@/action/authBusiness'
+import { sendOtpAction, verifyEmail } from '@/action/sendOtp'
+import LinkCustom from '@/components/ui/LinkCustom'
+import { toaster } from '@/components/ui/toaster'
+import { AUTH_EVENT_STORAGE_KEY } from '@/libs/tokenMemory'
+import { Box, Button, Checkbox, Field, Fieldset, Group, Heading, HStack, Input, InputGroup, Stack, Text, VStack } from '@chakra-ui/react'
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
+import { useRouter } from 'next/navigation'
+import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { LuEye, LuEyeClosed } from 'react-icons/lu'
+import z, { string } from 'zod'
+
+const formSchema = z.object({
+  email: z.string()
+    .min(1, { message: "Chưa điền thông tin" })
+    .pipe(z.email({ message: "Định dạng email không hợp lệ" })),
+  verifyEmail: z.string().min(1, "Chưa điền mã xác minh"),
+  password: z.string().min(6, "Tối thiểu 6 ký tự"),
+  acceptTerms: z.boolean().refine((val) => val === true, { error: "Bạn phải đồng ý điều khoản trước khi đăng ký" })
+})
+
+type FormValues = z.infer<typeof formSchema>
+
+
+
+const RegisterForm = () => {
+  const [seePass, setSeePass] = useState(false)
+  const [fieldSend, setFieldSend] = useState(false)
+  const [seconds, setSeconds] = useState<number>(0);
+  const inputEmailRef = useRef<HTMLInputElement | null>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter()
+
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    trigger,
+    formState: { isSubmitting, errors }
+  } = useForm<FormValues>({
+    resolver: standardSchemaResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      verifyEmail: '',
+      acceptTerms: false
+    },
+  })
+
+  // Lắng nghe sự kiện storage để đồng bộ nhiều tab
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key !== AUTH_EVENT_STORAGE_KEY || !e.newValue) return;
+
+      const event = JSON.parse(e.newValue) as {
+        type: "LOGIN" | "LOGOUT" | "FORCE_LOGOUT";
+        time: number;
+      };
+
+      if (event.type === "LOGIN") {
+        // Tab khác login → revalidate user
+        router.replace("/console")
+      }
+
+    };
+
+    window.addEventListener("storage", handler);
+
+    return () => {
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Chỉ chạy countdown khi seconds > 0
+    if (seconds <= 0) return;
+
+    timerRef.current = setInterval(() => {
+      setSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Cleanup để không tạo nhiều interval khi state đổi
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [seconds]);
+
+  const handleSendOTP = useCallback(() => {
+    startTransition(async () => {
+      const email = inputEmailRef.current?.value
+      if (!email) {
+        trigger('email')
+        return;
+      }
+      const verify = await verifyEmail(email)
+      if (!verify.status) {
+        toaster.create({
+          id: `verify-email-${Date.now()}`,
+          type: 'error',
+          title: verify.message
+        })
+      } else {
+        if (seconds > 0) return;
+        const res = await sendOtpAction(inputEmailRef.current?.value as string)
+        if (!res.success) {
+          toaster.create({
+            id: `send-otp-${Date.now()}`,
+            type: 'error',
+            title: res.message
+          })
+        } else {
+          toaster.create({
+            id: `send-otp-${Date.now()}`,
+            type: 'success',
+            title: res.message
+          })
+        }
+        setSeconds(60);
+      }
+    })
+  }, [])
+
+  const submitForm = handleSubmit(async (data) => {
+    const res = await registerBusiness(data)
+    if (!res.success) {
+      toaster.create({
+        id: `register-business-err-${Date.now()}`,
+        type: 'error',
+        title: "Đăng ký không thành công",
+        description: res.message
+      })
+    } else {
+      toaster.create({
+        id: `register-business-sc-${Date.now()}`,
+        type: 'success',
+        title: "Đăng ký thành công",
+      })
+      router.push("/business/login");
+    }
+  })
+
+  return (
+    <Box rounded={'xl'} bgColor={'white'} color={'black'}>
+      <Box p={6}>
+        <Heading size={'2xl'} fontWeight={'medium'}>
+          Đăng ký
+        </Heading>
+        <Text fontWeight={'500'} mt={2}>
+          Bạn đã có tài khoản {'{ten doanh nghiệp}'} For Business? <LinkCustom href={'/business/login'} color={'blue'} _hover={{ color: 'blue.500' }}>Đăng nhập</LinkCustom>
+        </Text>
+        <form onSubmit={submitForm}>
+          <Fieldset.Root mt={5}>
+            <Fieldset.Content>
+              <Field.Root invalid={!!errors.email}>
+                <Field.Label>Địa chỉ Email</Field.Label>
+                <Controller
+                  control={control}
+                  name='email'
+                  render={({ field }) => (
+                    <Input type="text" ref={inputEmailRef} value={field.value} borderColor={'gray.300'} placeholder='Nhập địa chỉ Email của bạn' onFocus={() => setFieldSend(true)} onChange={(e) => field.onChange(e.target.value)} />
+                  )}
+                />
+                <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+              </Field.Root>
+              {fieldSend && <Field.Root invalid={!!errors.verifyEmail}>
+                <Field.Label>Mã xác minh email</Field.Label>
+                <Group attached w={'full'}>
+                  <Input {...register('verifyEmail')} flex={1} type='text' borderColor={'gray.300'} placeholder='Nhập mã xác minh' />
+                  <Button w={'70px'} type='button' loading={isPending} disabled={seconds > 0} bgColor="gray.600" color={'white'} _hover={{ bgColor: "gray.500" }} onClick={handleSendOTP}>
+                    {seconds > 0 ? `${seconds}s` : "Gửi mã"}
+                  </Button>
+                </Group>
+                <Field.ErrorText>{errors.verifyEmail?.message}</Field.ErrorText>
+              </Field.Root>}
+
+
+              <Field.Root invalid={!!errors.password}>
+                <Field.Label>Mật khẩu</Field.Label>
+                <InputGroup endElement={<Button p={0} variant={'plain'} color={'black'} size={'sm'} onClick={() => setSeePass(!seePass)}>{seePass ? <LuEye /> : <LuEyeClosed />}</Button>}>
+                  <Input {...register('password')} type={seePass ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập mật khẩu' />
+                </InputGroup>
+                <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
+              </Field.Root>
+            </Fieldset.Content>
+            <Controller
+              control={control}
+              name='acceptTerms'
+              render={({ field }) => (
+                <Field.Root invalid={!!errors.acceptTerms}>
+                  <Checkbox.Root checked={field.value} alignItems="flex-start" variant={'solid'} colorPalette={'teal'} onCheckedChange={({ checked }) => field.onChange(checked)}>
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control />
+                    <Stack gap={1}>
+                      <Checkbox.Label>Tôi đồng ý với các <LinkCustom href={'#'} color={'blue'} _hover={{ color: 'blue.500' }}>Điều khoản dịch vụ</LinkCustom></Checkbox.Label>
+                    </Stack>
+                  </Checkbox.Root>
+                  <Field.ErrorText>{errors.acceptTerms?.message}</Field.ErrorText>
+
+                </Field.Root>
+              )}
+            />
+
+
+            <Button type="submit" loading={isSubmitting} mt={10} alignSelf="flex-center" bgColor={'black'} color={'white'}>
+              Đăng ký
+            </Button>
+          </Fieldset.Root>
+        </form>
+      </Box>
+    </Box>
+  )
+}
+
+export default RegisterForm
