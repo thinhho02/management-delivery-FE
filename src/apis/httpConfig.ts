@@ -2,13 +2,9 @@ import { broadcastAuthEvent, getAccessToken, setAccessToken } from "@/libs/token
 import axios from "axios"
 
 
-export const originBackend = process.env.NODE_ENV === "development"
-  ? "http://localhost:5000"
-  : (process.env.NEXT_PUBLIC_ORIGIN_PATH_BACKEND as string)
-
   
 const API = axios.create({
-  baseURL: `${originBackend}/api`,
+  baseURL: `/api`,
   withCredentials: true,
   headers: {
     "Accept-Encoding": "gzip, deflate, br",
@@ -69,7 +65,7 @@ API.interceptors.response.use(
 
       try {
 
-        const res = await axios.get(`${originBackend}/api/auth/refresh-token`, { withCredentials: true })
+        const res = await axios.get(`/api/auth/refresh-token`, { withCredentials: true })
         
         const newAccessToken: string = res.data.accessToken;
         // Lưu token mới vào localStorage

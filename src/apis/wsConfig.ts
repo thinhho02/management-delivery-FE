@@ -1,5 +1,7 @@
 import { io } from 'socket.io-client'
-import { originBackend } from './httpConfig';
+
+
+const originBackend = process.env.NEXT_PUBLIC_ORIGIN_PATH_BACKEND
 
 const socketInstance = io(originBackend, {
     autoConnect: false,

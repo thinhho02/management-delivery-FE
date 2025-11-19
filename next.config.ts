@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
       }
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_ORIGIN_PATH_BACKEND}/api/:path*`
+      }
+    ]
+  }
 };
 
 export default nextConfig;
