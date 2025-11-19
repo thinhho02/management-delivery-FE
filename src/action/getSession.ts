@@ -22,7 +22,7 @@ export const getSession = async () => {
         const cookieStore = await cookies();
         const refresh = cookieStore.get("refreshToken")?.value;
         console.log(refresh)
-        const res = await fetch(`${originBackend}/auth/get-session`, {
+        const res = await fetch(`${originBackend}/api/auth/get-session`, {
             method: "GET",
             credentials: "include",
             headers: {
