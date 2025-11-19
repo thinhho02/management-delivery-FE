@@ -3,12 +3,12 @@ import axios from "axios"
 
 
 export const originBackend = process.env.NODE_ENV === "development"
-  ? "http://localhost:5000/api"
+  ? "http://localhost:5000"
   : (process.env.NEXT_PUBLIC_ORIGIN_PATH_BACKEND as string)
 
   
 const API = axios.create({
-  baseURL: originBackend,
+  baseURL: `${originBackend}/api`,
   withCredentials: true,
   headers: {
     "Accept-Encoding": "gzip, deflate, br",
