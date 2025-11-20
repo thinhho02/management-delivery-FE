@@ -7,7 +7,7 @@ const PageSignUpBusiness = () => {
     return (
         <Container>
             <Flex>
-                <Box maxW={'8/12'} flex={'1'} position={'relative'}>
+                <Box maxW={'8/12'} flex={'1'} position={'relative'} display={{base: "none", md:"block"}}>
                     <AbsoluteCenter color="white" flexDirection={'column'}>
                         <Heading
                             fontSize="50px"
@@ -31,7 +31,7 @@ const PageSignUpBusiness = () => {
                         </Box>
                     </AbsoluteCenter>
                 </Box>
-                <Box w={'4/12'}>
+                <Box w={{base: "full", md: "4/12"}}>
                     <RegisterForm />
                 </Box>
             </Flex>

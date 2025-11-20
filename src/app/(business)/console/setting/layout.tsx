@@ -8,18 +8,19 @@ const LayoutSetting = ({
     children: React.ReactNode;
 }>) => {
     return (
-        <Box w={'full'} mt={5}>
+        <Box w={'full'} mt={5} pr={{base: "40px", md: 0}}>
             <Heading size={'2xl'} fontWeight={'bold'}>
                 Cài đặt
             </Heading>
-            <Flex mt={10}>
+            <Flex mt={10} flexDirection={{base: "column", md: "row"}}>
                 <AsideSettingBusiness />
 
                 {/* ==== MAIN CONTENT ==== */}
                 <Box
                     flex="1"
                     w="full"
-                    ml={10}
+                    ml={{base: "0", md: 10}}
+                    mt={{base: 10, md: "0"}}
                     borderRadius="2xl"
                     p={8}
                     backdropFilter="blur(20px)"

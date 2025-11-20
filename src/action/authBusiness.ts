@@ -3,10 +3,6 @@
 import { create } from "@/apis/apiCore"
 import { verifyOtpAction } from "./sendOtp"
 
-type ResponseRegister = {
-    success: boolean, 
-}
-
 function isValidText(text: string) {
     return !text || text.trim() === ''
 }
@@ -24,16 +20,6 @@ export const registerBusiness = async (payload: { email: string, password: strin
 
     if (!verify.success) {
         return { success: false, message: verify.message }
-    }
-    const data = {
-        email: payload.email,
-        password: payload.password,
-        verify: verify.success
-    }
-    const res = await create<ResponseRegister>("/auth/business/register", data)
-    console.log(res)
-    if (!res.success) {
-        return { success: false, message: res.error }
     }
 
     return { success: true }

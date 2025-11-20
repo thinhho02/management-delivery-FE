@@ -8,6 +8,7 @@ import { formatDateVN } from '@/utils/formatDateVN';
 
 
 interface PayloadEventDevice {
+  sid: string;
   id: string;
   title: string;
   message: string;
@@ -138,7 +139,7 @@ const ToasterNotify = () => {
             onClick: async () => {
               console.log("Đang xử lý...");
               await new Promise(res => setTimeout(res, 3000));
-              console.log("Gửi API logout thiết bị đáng ngờ:", payload.id);
+              console.log("Gửi API logout thiết bị đáng ngờ:", payload.sid);
             }
           }
         })

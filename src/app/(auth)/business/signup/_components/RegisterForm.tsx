@@ -2,6 +2,7 @@
 
 import { registerBusiness } from '@/action/authBusiness'
 import { sendOtpAction, verifyEmail } from '@/action/sendOtp'
+import { create } from '@/apis/apiCore'
 import LinkCustom from '@/components/ui/LinkCustom'
 import { toaster } from '@/components/ui/toaster'
 import { AUTH_EVENT_STORAGE_KEY } from '@/libs/tokenMemory'
@@ -132,21 +133,42 @@ const RegisterForm = () => {
   }, [])
 
   const submitForm = handleSubmit(async (data) => {
-    const res = await registerBusiness(data)
-    if (!res.success) {
+
+    const verifyRegister = await registerBusiness(data)
+
+    if (!verifyRegister.success) {
       toaster.create({
         id: `register-business-err-${Date.now()}`,
         type: 'error',
         title: "Đăng ký không thành công",
-        description: res.message
+        description: verifyRegister.message
       })
     } else {
-      toaster.create({
-        id: `register-business-sc-${Date.now()}`,
-        type: 'success',
-        title: "Đăng ký thành công",
-      })
-      router.push("/business/login");
+
+      const dataForm = {
+        email: data.email,
+        password: data.password,
+        verify: verifyRegister.success
+      }
+      const res = await create<{ success: boolean }>("/auth/business/register", dataForm)
+      console.log(res)
+      if (!res.success) {
+
+        toaster.create({
+          id: `register-business-err-${Date.now()}`,
+          type: 'error',
+          title: "Đăng ký không thành công",
+          description: res.error
+        })
+      } else {
+        
+        toaster.create({
+          id: `register-business-sc-${Date.now()}`,
+          type: 'success',
+          title: "Đăng ký thành công",
+        })
+        router.push("/business/login");
+      }
     }
   })
 
