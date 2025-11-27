@@ -10,7 +10,7 @@ import useSWR, { KeyedMutator } from "swr";
 
 
 
-interface UserContextState {
+export interface UserContextState {
   user: ISessionResponse;
   mutateUser: KeyedMutator<APIResponse<ISessionResponse>>
 }
@@ -45,7 +45,7 @@ export default function UserProviderBusiness({ children }: { children: React.Rea
     if (error) return;
 
     if (swrData && !swrData.success) {
-      router.push("/business/login");
+      router.replace("/business/login");
     }
   }, [swrData, error, router]);
 

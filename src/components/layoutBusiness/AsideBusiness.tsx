@@ -7,7 +7,7 @@ import { RiArrowDropRightFill } from 'react-icons/ri'
 import { FiSidebar } from 'react-icons/fi';
 import { ColorModeButton } from '../ui/color-mode'
 import LinkCustom from '../ui/LinkCustom'
-import { useUserBusiness } from '@/providers/UserBusinessProvider'
+import { useUserBusiness } from '@/app/(business)/_providers/UserProviderBusiness'
 import LogoutButtonBusiness from './LogoutButtonBusiness'
 
 
@@ -101,7 +101,7 @@ const AsideBusiness = () => {
             <Drawer.Root open={open} onOpenChange={(e) => setOpen(e.open)} placement={'start'}>
                 <Drawer.Trigger asChild>
                     <Button variant={'ghost'}
-                        size="md" display={{ base: "flex", md: "none" }} position={'absolute'} left={0}>
+                        size="md" display={{ base: "flex", md: "none" }} position={'fixed'} left={0} top={0}>
                         <FiSidebar />
                         Mở thanh menu
                     </Button>

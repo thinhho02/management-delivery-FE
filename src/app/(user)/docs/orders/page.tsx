@@ -55,7 +55,6 @@ const Page = () => {
               <Code w={'full'} dangerouslySetInnerHTML={{
                 __html: `headers: {<br/>
                   'Content-Type' : 'application/json',<br/>
-                  'Cache-Control': 'no-cache'<br/>
               }`}} />
             </Blockquote.Content>
           </Blockquote.Root>

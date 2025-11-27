@@ -1,16 +1,16 @@
 import { create } from '@/apis/apiCore';
 import { broadcastAuthEvent, clearAccessToken } from '@/libs/tokenMemory';
-import { useSocket } from '@/providers/SocketProvider';
-import { useUserBusiness } from '@/providers/UserBusinessProvider';
+import { useUserBusiness } from '@/app/(business)/_providers/UserProviderBusiness';
 import { Button } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation';
 import React from 'react'
 import { RiLogoutBoxLine } from 'react-icons/ri'
 import { toaster } from '../ui/toaster';
+import { useSocketBusiness } from '@/app/(business)/_providers/SocketProviderBusiness';
 
 const LogoutButtonBusiness = () => {
     const router = useRouter();
-    const { disconnectManually } = useSocket()
+    const { disconnectManually } = useSocketBusiness()
     const { mutateUser } = useUserBusiness();
 
     const handleLogout = async () => {

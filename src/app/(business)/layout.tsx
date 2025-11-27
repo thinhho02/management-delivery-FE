@@ -1,5 +1,5 @@
 import SWRProvider from "@/providers/SWRProvider";
-import UserProviderBusiness from "@/providers/UserBusinessProvider";
+import UserProviderBusiness from "@/app/(business)/_providers/UserProviderBusiness";
 import type { Metadata } from "next";
 
 

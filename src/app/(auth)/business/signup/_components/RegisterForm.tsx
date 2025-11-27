@@ -6,7 +6,7 @@ import { create } from '@/apis/apiCore'
 import LinkCustom from '@/components/ui/LinkCustom'
 import { toaster } from '@/components/ui/toaster'
 import { AUTH_EVENT_STORAGE_KEY } from '@/libs/tokenMemory'
-import { Box, Button, Checkbox, Field, Fieldset, Group, Heading, HStack, Input, InputGroup, Stack, Text, VStack } from '@chakra-ui/react'
+import { Box, Button, Checkbox, CloseButton, Dialog, Field, Fieldset, Group, Heading, HStack, Input, InputGroup, Link, Portal, Stack, Text, VStack } from '@chakra-ui/react'
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react'
@@ -18,6 +18,7 @@ const formSchema = z.object({
   email: z.string()
     .min(1, { message: "Chưa điền thông tin" })
     .pipe(z.email({ message: "Định dạng email không hợp lệ" })),
+  name: z.string().min(1, "Chưa điền tên doanh nghiệp"),
   verifyEmail: z.string().min(1, "Chưa điền mã xác minh"),
   password: z.string().min(6, "Tối thiểu 6 ký tự"),
   acceptTerms: z.boolean().refine((val) => val === true, { error: "Bạn phải đồng ý điều khoản trước khi đăng ký" })
@@ -28,6 +29,7 @@ type FormValues = z.infer<typeof formSchema>
 
 
 const RegisterForm = () => {
+  const [openModal, setOpenModal] = useState(false)
   const [seePass, setSeePass] = useState(false)
   const [fieldSend, setFieldSend] = useState(false)
   const [seconds, setSeconds] = useState<number>(0);
@@ -48,6 +50,7 @@ const RegisterForm = () => {
     defaultValues: {
       email: '',
       password: '',
+      name: '',
       verifyEmail: '',
       acceptTerms: false
     },
@@ -148,6 +151,7 @@ const RegisterForm = () => {
       const dataForm = {
         email: data.email,
         password: data.password,
+        name: data.name,
         verify: verifyRegister.success
       }
       const res = await create<{ success: boolean }>("/auth/business/register", dataForm)
@@ -161,7 +165,7 @@ const RegisterForm = () => {
           description: res.error
         })
       } else {
-        
+
         toaster.create({
           id: `register-business-sc-${Date.now()}`,
           type: 'success',
@@ -206,6 +210,12 @@ const RegisterForm = () => {
                 <Field.ErrorText>{errors.verifyEmail?.message}</Field.ErrorText>
               </Field.Root>}
 
+              <Field.Root invalid={!!errors.name}>
+                <Field.Label>Nhập tên doanh nghiệp</Field.Label>
+                <Input {...register('name')} type={'text'} borderColor={'gray.300'} placeholder='Nhập tên doanh nghiệp' />
+                <Field.ErrorText>{errors.name?.message}</Field.ErrorText>
+              </Field.Root>
+
 
               <Field.Root invalid={!!errors.password}>
                 <Field.Label>Mật khẩu</Field.Label>
@@ -220,13 +230,15 @@ const RegisterForm = () => {
               name='acceptTerms'
               render={({ field }) => (
                 <Field.Root invalid={!!errors.acceptTerms}>
-                  <Checkbox.Root checked={field.value} alignItems="flex-start" variant={'solid'} colorPalette={'teal'} onCheckedChange={({ checked }) => field.onChange(checked)}>
-                    <Checkbox.HiddenInput />
-                    <Checkbox.Control />
-                    <Stack gap={1}>
-                      <Checkbox.Label>Tôi đồng ý với các <LinkCustom href={'#'} color={'blue'} _hover={{ color: 'blue.500' }}>Điều khoản dịch vụ</LinkCustom></Checkbox.Label>
-                    </Stack>
-                  </Checkbox.Root>
+                  <HStack gap={1}>
+                    <Checkbox.Root checked={field.value} alignItems="flex-start" variant={'solid'} colorPalette={'teal'} onCheckedChange={({ checked }) => field.onChange(checked)}>
+                      <Checkbox.HiddenInput />
+                      <Checkbox.Control />
+                      <Checkbox.Label>Tôi đồng ý với các </Checkbox.Label>
+                    </Checkbox.Root>
+                    <Box p={0} cursor={'pointer'} color={'blue'} _hover={{ color: 'blue.500' }} onClick={() => setOpenModal(true)}>Điều khoản dịch vụ</Box>
+                  </HStack>
+
                   <Field.ErrorText>{errors.acceptTerms?.message}</Field.ErrorText>
 
                 </Field.Root>
@@ -240,6 +252,40 @@ const RegisterForm = () => {
           </Fieldset.Root>
         </form>
       </Box>
+      <Dialog.Root
+        open={openModal}
+        size={'xl'}
+        placement={'center'}
+        lazyMount
+        closeOnInteractOutside={false}
+        onOpenChange={(e) => {
+          setOpenModal(e.open)
+        }}>
+          
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>
+                  Điều khoản dịch vụ
+                </Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+
+
+              </Dialog.Body>
+              <Dialog.Footer>
+
+
+              </Dialog.Footer>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton size="sm" />
+              </Dialog.CloseTrigger>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   )
 }

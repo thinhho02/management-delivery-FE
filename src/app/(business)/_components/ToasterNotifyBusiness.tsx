@@ -1,9 +1,11 @@
 'use client';
 
-import { useSocket } from '@/providers/SocketProvider';
 import React, { useEffect, useRef } from 'react';
-import { toaster } from './toaster';
+import { toaster } from '../../../components/ui/toaster';
 import { formatDateVN } from '@/utils/formatDateVN';
+import { create } from '@/apis/apiCore';
+import { useRouter } from 'next/navigation';
+import { useSocketBusiness } from '@/app/(business)/_providers/SocketProviderBusiness';
 
 
 
@@ -21,8 +23,9 @@ const safeToast = (cb: () => void) => {
   queueMicrotask(cb);
 };
 
-const ToasterNotify = () => {
-  const { isConnected, socket, manualDisconnectRef } = useSocket();
+const ToasterNotifyBusiness = () => {
+  const router = useRouter()
+  const { isConnected, socket, manualDisconnectRef } = useSocketBusiness();
 
   // ID toast hiện tại (disconnect, reconnect, unstable)
   const toastIdRef = useRef<string | null>(null);
@@ -134,26 +137,35 @@ const ToasterNotify = () => {
           description: `${payload.message} - Vào lúc: ${formatDateVN(payload.time)}`,
           duration: 60 * 60 * 1000,
           removeDelay: 1000,
+          closable: true,
           action: {
             label: "Không phải tôi?",
             onClick: async () => {
               console.log("Đang xử lý...");
-              await new Promise(res => setTimeout(res, 3000));
+              await create("/auth/logout_device_suspicious", { sessionSuspicious: payload.sid })
               console.log("Gửi API logout thiết bị đáng ngờ:", payload.sid);
             }
           }
         })
       );
     };
-
+    const handleLogoutSuspicious = (payload: { roleName: string }) => {
+      if (payload.roleName === 'business') {
+        router.replace("/business/login")
+      } else {
+        router.replace("/internal/login")
+      }
+    }
     socket.on("event:device_suspicious", handleSuspicious);
+    socket.on("event:logout_device_suspicious", handleLogoutSuspicious)
 
     return () => {
       socket.off("event:device_suspicious", handleSuspicious);
+      socket.off("event:logout_device_suspicious", handleLogoutSuspicious)
     };
   }, [socket]);
 
   return null;
 };
 
-export default ToasterNotify;
+export default ToasterNotifyBusiness;

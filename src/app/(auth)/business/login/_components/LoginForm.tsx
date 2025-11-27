@@ -4,11 +4,11 @@ import { create } from '@/apis/apiCore'
 import LinkCustom from '@/components/ui/LinkCustom'
 import { toaster } from '@/components/ui/toaster'
 import { getLiteFingerprint } from '@/libs/getLiteFingerprint'
-import { Box, Button, Checkbox, Field, Fieldset, Heading, HStack, Input, InputGroup, Text } from '@chakra-ui/react'
+import { Box, Button, Checkbox, CloseButton, createOverlay, Dialog, Field, Fieldset, Heading, HStack, Input, InputGroup, Portal, Stack, Text } from '@chakra-ui/react'
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useController, useForm } from 'react-hook-form'
 import { LuEye, LuEyeClosed } from 'react-icons/lu'
 import z from 'zod'
 
@@ -27,6 +27,7 @@ interface ResponseLogin {
     sessionId: string;
     message: string;
 }
+
 const LoginForm = () => {
     const router = useRouter()
     const [seePass, setSeePass] = useState(false)
@@ -73,6 +74,13 @@ const LoginForm = () => {
         }
 
     })
+
+    const openDialog = () => {
+
+        dialog.open("123", {
+            placement: 'center'
+        })
+    }
     return (
         <Box rounded={'xl'} bgColor={'white'} color={'black'} w={80}>
             <Box p={6}>
@@ -101,7 +109,17 @@ const LoginForm = () => {
                             <Field.Root invalid={!!errors.password}>
                                 <HStack w={'full'} justifyContent={'space-between'} alignItems={'center'}>
                                     <Field.Label>Mật khẩu</Field.Label>
-                                    <Button p={0} variant={'plain'} size={'sm'} color={'blue'} _hover={{ color: 'blue.500' }}>Quên mật khẩu?</Button>
+                                    <Button
+                                        p={0}
+                                        variant={'plain'}
+                                        size={'sm'}
+                                        color={'blue'}
+                                        type='button'
+                                        _hover={{ color: 'blue.500' }}
+                                        onClick={openDialog}
+                                    >
+                                        Quên mật khẩu?
+                                    </Button>
                                 </HStack>
                                 <InputGroup endElement={<Button p={0} variant={'plain'} color={'black'} size={'sm'} onClick={() => setSeePass(!seePass)}>{seePass ? <LuEye /> : <LuEyeClosed />}</Button>}>
                                     <Input {...register('password')} type={seePass ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập mật khẩu' />
@@ -131,8 +149,107 @@ const LoginForm = () => {
                     </Fieldset.Root>
                 </form>
             </Box>
+            <dialog.Viewport />
         </Box>
     )
 }
+
+
+interface DialogProps {
+    placement?: "center" | "top" | "bottom" | undefined,
+    description?: React.ReactNode;
+}
+
+const emailSchema = formSchema.pick({
+    email: true,
+});
+
+type EmailValues = z.infer<typeof emailSchema>;
+
+const dialog = createOverlay<DialogProps>((props) => {
+    const { description, ...rest } = props
+
+    const [messageSender, setMessageSender] = useState<string| undefined>(undefined)
+    const {
+        handleSubmit,
+        control,
+        formState: { isSubmitting, errors }
+    } = useForm<EmailValues>({
+        resolver: standardSchemaResolver(emailSchema),
+        defaultValues: {
+            email: '',
+        },
+    })
+
+    const submitFormChangePass = handleSubmit(async (dataForm) => {
+        if (dataForm.email === '') return;
+
+        const res = await create<{message: string}>("/business/verify", { email: dataForm.email })
+        if (!res.success) {
+            toaster.create({
+                id: `Verify-E-${Date.now}`,
+                type: 'error',
+                title: 'Không thể gửi email',
+                description: res.error
+            })
+        } else {
+            setMessageSender(res.result.message)
+        }
+
+    })
+    return (
+        <Dialog.Root {...rest} lazyMount closeOnInteractOutside={false} size={'md'}>
+            <Portal>
+                <Dialog.Backdrop />
+                <Dialog.Positioner>
+                    <Dialog.Content>
+                        <Dialog.Header>
+                            <Dialog.Title>
+                                Quên mật khẩu
+                            </Dialog.Title>
+                        </Dialog.Header>
+                        <Dialog.Body>
+                            {messageSender
+                                ? (
+                                    <Box w={'full'} textAlign={'center'}>
+                                        <Heading size={'xl'} fontWeight={'bold'} color={'blue'}>
+                                            {messageSender}
+                                        </Heading>
+                                    </Box>
+                                )
+                                : (
+                                    <form onSubmit={submitFormChangePass}>
+                                        <Field.Root invalid={!!errors.email}>
+                                            <Field.Label>Địa chỉ Email</Field.Label>
+                                            <Controller
+                                                control={control}
+                                                name='email'
+                                                render={({ field }) => (
+                                                    <Input type="text" value={field.value} borderColor={'gray.300'} placeholder='Nhập địa chỉ Email của bạn' onChange={(e) => field.onChange(e.target.value)} />
+                                                )}
+                                            />
+                                            <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+                                        </Field.Root>
+
+                                        <Stack w={'full'} mt={7}>
+                                            <Button type='submit' loading={isSubmitting} alignSelf={'end'}>
+                                                Xác nhận
+                                            </Button>
+                                        </Stack>
+                                    </form>)
+                            }
+                        </Dialog.Body>
+
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                        </Dialog.CloseTrigger>
+                    </Dialog.Content>
+                </Dialog.Positioner>
+            </Portal >
+        </Dialog.Root >
+    )
+})
+
+
 
 export default LoginForm

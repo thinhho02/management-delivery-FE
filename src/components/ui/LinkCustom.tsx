@@ -11,7 +11,7 @@ type LinkCustomProps =
         children: React.ReactNode;
     };
 
-const LinkCustom = React.forwardRef<HTMLAnchorElement, LinkCustomProps>(({ href, children, prefetch, replace, scroll, shallow, locale, onNavigate, ...chakraProps }, ref) => {
+const LinkCustom = React.forwardRef<HTMLAnchorElement, LinkCustomProps>(({ href, children, prefetch, replace, scroll, shallow, locale, target, onNavigate, ...chakraProps }, ref) => {
     return (
         <ChakraLink {...chakraProps} outline={'none'} textDecoration={'none'} ref={ref} asChild>
             <NextLink
@@ -22,6 +22,7 @@ const LinkCustom = React.forwardRef<HTMLAnchorElement, LinkCustomProps>(({ href,
                 shallow={shallow}
                 locale={locale}
                 onNavigate={onNavigate}
+                target={target}
             >
                 {children}
             </NextLink>

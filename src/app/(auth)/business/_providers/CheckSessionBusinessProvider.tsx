@@ -60,7 +60,7 @@ const CheckSessionBusinessProvider = ({ children }: { children: React.ReactNode 
   }, [data]);
 
 
-  if (isLoading || isValidating) {
+  if (data?.success || isLoading || isValidating) {
     return (
       <AbsoluteCenter>
         <Spinner size="lg" color="purple.400" />

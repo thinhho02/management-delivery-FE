@@ -67,7 +67,7 @@ export async function verifyOtpAction(email: string, otp: string): Promise<{ suc
     const otpKey = `otp:${email}`;
     const cachedOtp = await redis.get(otpKey);
     if (!cachedOtp) {
-        return { success: false, message: "OTP đã hết hạn." };
+        return { success: false, message: "OTP đã hết hạn hoặc không tồn tại." };
     }
 
     if (cachedOtp != otp) {

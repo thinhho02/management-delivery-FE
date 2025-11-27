@@ -3,7 +3,7 @@ import { Box } from '@chakra-ui/react';
 import React from 'react'
 
 import backgroundImage from '/public/images/background.svg'
-import CheckSessionBusinessProvider from '@/providers/CheckSessionBusinessProvider';
+import CheckSessionBusinessProvider from './_providers/CheckSessionBusinessProvider';
 
 
 const BusinessAuthLayout = ({

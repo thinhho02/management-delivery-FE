@@ -1,9 +1,8 @@
-'use client';
+'use client'
 
 import { createContext, RefObject, useContext, useEffect, useMemo, useRef, useState } from "react";
 import socketInstance from "@/apis/wsConfig";
-import { useUserBusiness } from "./UserBusinessProvider";
-
+import { useUserInternal } from "./UserProviderInternal";
 
 
 interface SocketContextState {
@@ -18,14 +17,12 @@ interface SocketContextState {
     reconnect: () => void;
 }
 
+const SocketContextInternal = createContext<SocketContextState | undefined>(undefined);
 
-const SocketContext = createContext<SocketContextState | undefined>(undefined);
-
-
-export function SocketProvider({ children }: { children: React.ReactNode }) {
+export const SocketProviderInternal = ({ children }: { children: React.ReactNode }) => {
     const [isConnected, setIsConnected] = useState(false);
     const manualDisconnectRef = useRef(false);
-    const { user } = useUserBusiness()
+    const { user } = useUserInternal()
 
     // Setup listeners ONE TIME only
     useEffect(() => {
@@ -37,9 +34,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         socketInstance.on("connect", () => {
             console.log("Socket connected:", socketInstance.id);
             console.log(user)
-            if (user && user.isTrusted) {
-                socketInstance.emit("join:room_session", { sessionId: user.sid })
-            }
+            socketInstance.emit("join:room_session", { sessionId: user.sid })
             setIsConnected(true);
         });
 
@@ -95,6 +90,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         }, 200);
     };
 
+
+
     const value = useMemo(
         () => ({
             isConnected,
@@ -110,18 +107,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         [isConnected]
     );
 
+
     return (
-        <SocketContext.Provider value={value}>
+         <SocketContextInternal.Provider value={value}>
             {children}
-        </SocketContext.Provider>
-    );
+        </SocketContextInternal.Provider>
+    )
 }
 
 
-export function useSocket() {
-    const ctx = useContext(SocketContext);
+export function useSocketInternal() {
+    const ctx = useContext(SocketContextInternal);
     if (!ctx) {
-        throw new Error("useSocket must be used inside <SocketProvider>");
+        throw new Error("useSocket must be used inside <SocketProviderInternal>");
     }
     return ctx;
 }
