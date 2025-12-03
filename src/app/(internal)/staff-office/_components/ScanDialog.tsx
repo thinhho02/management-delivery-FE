@@ -39,7 +39,8 @@ const ScanDialog = ({
             {
                 fps: 5,
                 qrbox: { width: 250, height: 250 },
-                rememberLastUsedCamera: true
+                rememberLastUsedCamera: true,
+
             },
             false
         );
@@ -67,8 +68,13 @@ const ScanDialog = ({
     };
 
     useEffect(() => {
-        if (open) startScanner();
-        else stopScanner();
+        setTimeout(() => {
+            if (open) {
+
+                startScanner()
+            }
+            else stopScanner();
+        }, 500)
 
         return () => stopScanner();
     }, [open]);
@@ -138,7 +144,7 @@ const ScanDialog = ({
                         </Dialog.Header>
 
                         <Dialog.Body>
-                            <Box id={containerId} w="100%" minH="300px" />
+                            <Box id={containerId} w="100%" minH="400px" />
 
                             {loadingScan && (
                                 <Spinner
