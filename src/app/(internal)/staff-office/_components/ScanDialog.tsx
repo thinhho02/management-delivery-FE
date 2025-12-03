@@ -9,12 +9,13 @@ import {
     Portal,
     Spinner,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LuScanQrCode } from "react-icons/lu";
 import { QrReader } from "react-qr-reader";
 import { KeyedMutator } from "swr";
 import { IPickupOrderResponse } from "../_hooks/usePickupOrder";
 import { toaster } from "@/components/ui/toaster";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const ScanDialog = ({
     officeId,
@@ -26,19 +27,59 @@ const ScanDialog = ({
     mutate: KeyedMutator<APIResponse<IPickupOrderResponse>>;
 }) => {
     const [open, setOpen] = useState(false);
-    const [scanning, setScanning] = useState(false);
-    const [cameraError, setCameraError] = useState<string | null>(null);
+    const [loadingScan, setLoadingScan] = useState(false);
+    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const containerId = "qr-reader-container";
+
+    const startScanner = () => {
+        if (scannerRef.current) return;
+
+        const scanner = new Html5QrcodeScanner(
+            containerId,
+            {
+                fps: 5,
+                qrbox: { width: 250, height: 250 },
+                rememberLastUsedCamera: true
+            },
+            false
+        );
+
+        scannerRef.current = scanner;
+
+        scanner.render(
+            async (result: string) => {
+                console.log("QR Scanned:", result);
+                scanner.clear();
+                scannerRef.current = null;
+                await handleScan(result);
+            },
+            (err: any) => {
+                console.log("QR error:", err);
+            }
+        );
+    };
+
+    const stopScanner = () => {
+        if (scannerRef.current) {
+            scannerRef.current.clear();
+            scannerRef.current = null;
+        }
+    };
+
+    useEffect(() => {
+        if (open) startScanner();
+        else stopScanner();
+
+        return () => stopScanner();
+    }, [open]);
 
     const handleScan = async (trackingCode: string) => {
         if (!officeId) {
-            toaster.error({
-                title: "Thất bại",
-                description: "Không tìm thấy mã bưu cục",
-            });
+            toaster.error({ title: "Lỗi", description: "Không tìm thấy mã bưu cục" });
             return;
         }
 
-        setScanning(true);
+        setLoadingScan(true);
 
         const res = await update<any>("/order/office/qr-scan", {
             trackingCode,
@@ -47,8 +88,12 @@ const ScanDialog = ({
         });
 
         if (res.success) {
-            toaster.success({ title: "Thành công", description: res.result.message });
+            toaster.success({
+                title: "Thành công",
+                description: res.result.message,
+            });
 
+            // Update danh sách đơn hàng
             mutate(
                 (prev) => {
                     if (!prev?.success) return prev;
@@ -70,7 +115,7 @@ const ScanDialog = ({
             toaster.error({ title: "Lỗi", description: res.error });
         }
 
-        setScanning(false);
+        setLoadingScan(false);
     };
 
     return (
@@ -93,39 +138,16 @@ const ScanDialog = ({
                         </Dialog.Header>
 
                         <Dialog.Body>
-                            <Box position="relative" w="100%" h="360px">
-                                <QrReader
-                                    onResult={(result, error) => {
-                                        if (result) {
-                                            const text = result.getText ? result.getText() : "";
-                                            if (text) handleScan(text);
-                                        }
-                                    }}
-                                    constraints={{
-                                        facingMode: { ideal: "environment" },
-                                    }}
-                                    scanDelay={300}
-                                    videoContainerStyle={{ width: "100%", height: "100%" }}
-                                    videoStyle={{ width: "100%", height: "100%" }}
-                                />
-                                {scanning && (
-                                    <Spinner
-                                        position="absolute"
-                                        top="50%"
-                                        left="50%"
-                                        transform="translate(-50%, -50%)"
-                                    />
-                                )}
-                            </Box>
+                            <Box id={containerId} w="100%" minH="300px" />
 
-                            {cameraError && (
-                                <Box color="red.500" mt={3} fontSize="sm">
-                                    ⚠️ Không mở được camera: {cameraError}
-                                    <br />
-                                    • Hãy kiểm tra quyền camera trong trình duyệt.
-                                    <br />
-                                    • iPhone yêu cầu bạn đang dùng **HTTPS**.
-                                </Box>
+                            {loadingScan && (
+                                <Spinner
+                                    size="lg"
+                                    position="absolute"
+                                    top="50%"
+                                    left="50%"
+                                    transform="translate(-50%, -50%)"
+                                />
                             )}
                         </Dialog.Body>
 
