@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 import { Box, Flex } from "@chakra-ui/react";
-import AsideAdmin from "@/components/layoutAdmin/AsideAdmin";
-import dynamic from "next/dynamic";
+import AsideAdmin from "@/app/(internal)/_components/AsideAdmin";
 import { SocketProviderInternal } from "../_providers/SocketProviderInternal";
 import ToasterNotifyInternal from "../_components/ToasterNotifyInternal";
 

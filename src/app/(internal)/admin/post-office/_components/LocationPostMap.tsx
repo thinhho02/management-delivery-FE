@@ -70,7 +70,8 @@ const LocationPostMap = memo(({ zoneId, valueType, lngLat, setLngLat, setValue }
 
         return () => {
             if (mapRef.current) {
-                map.remove();
+                mapRef.current.remove()
+                mapRef.current = null
             }
         };
 
@@ -82,19 +83,30 @@ const LocationPostMap = memo(({ zoneId, valueType, lngLat, setLngLat, setValue }
         if (!lngLat || !mapRef.current || !dataZone) return;
         const map = mapRef.current
         const coordinates: { longitude: number, latitude: number } = JSON.parse(lngLat)
-        const marker = new mapboxgl.Marker({ draggable: true, color: '#FF0000' })
-            .setLngLat([coordinates.longitude, coordinates.latitude])
-            .addTo(map)
+        if (!markerRef.current) {
+            const marker = new mapboxgl.Marker({ draggable: true, color: '#FF0000' })
+                .setLngLat([coordinates.longitude, coordinates.latitude])
+                .addTo(map)
 
-        const pointMarker = point([coordinates.longitude, coordinates.latitude]);
-        const buffered = buffer(pointMarker, 20, { units: "meters" });
-        const bboxMarker = buffered && bbox(buffered);
-        map.fitBounds(bboxMarker as [number, number, number, number], {
-            padding: 100,
-            duration: 1000,
-            maxZoom: 17,
-        });
-        markerRef.current = marker
+            const pointMarker = point([coordinates.longitude, coordinates.latitude]);
+            const buffered = buffer(pointMarker, 20, { units: "meters" });
+            const bboxMarker = buffered && bbox(buffered);
+            map.fitBounds(bboxMarker as [number, number, number, number], {
+                padding: 100,
+                duration: 1000,
+                maxZoom: 17,
+            });
+            markerRef.current = marker
+            marker.on("dragend", () => {
+                const coordinatesLngLat = marker.getLngLat();
+                const valueLngLat = JSON.stringify({ longitude: coordinatesLngLat.lng, latitude: coordinatesLngLat.lat })
+                setLngLat(valueLngLat)
+                // setValue("lngLat", lngLat, { shouldDirty: true })
+
+            });
+        } else {
+            markerRef.current.setLngLat([coordinates.longitude, coordinates.latitude]);
+        }
         const checkPoint = isPointInZone(coordinates.longitude, coordinates.latitude, dataZone.geometry);
         if (!checkPoint) {
             queueMicrotask(() => {
@@ -108,18 +120,68 @@ const LocationPostMap = memo(({ zoneId, valueType, lngLat, setLngLat, setValue }
         } else {
             setValue("lngLat", lngLat)
         }
-        marker.on("dragend", () => {
-            const coordinatesLngLat = marker.getLngLat();
-            const valueLngLat = JSON.stringify({ longitude: coordinatesLngLat.lng, latitude: coordinatesLngLat.lat })
-            setLngLat(valueLngLat)
-
-        });
         return () => {
             if (markerRef.current) {
-                marker.remove()
+                markerRef.current.remove()
+                markerRef.current = null
             }
         }
     }, [lngLat, dataZone])
+
+    useEffect(() => {
+        if (!mapRef.current) return;
+        const map = mapRef.current;
+
+        const handleClick = (e: mapboxgl.MapMouseEvent & mapboxgl.MapEvent) => {
+            const { lng, lat } = e.lngLat;
+
+            const newValue = JSON.stringify({ longitude: lng, latitude: lat });
+
+            // Nếu marker chưa tồn tại → tạo marker mới
+            if (!markerRef.current) {
+                const marker = new mapboxgl.Marker({ draggable: true, color: "#FF0000" })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+                const pointMarker = point([lng, lat]);
+                const buffered = buffer(pointMarker, 20, { units: "meters" });
+                const bboxMarker = buffered && bbox(buffered);
+                map.fitBounds(bboxMarker as [number, number, number, number], {
+                    padding: 100,
+                    duration: 1000,
+                    maxZoom: 17,
+                });
+                markerRef.current = marker;
+
+                marker.on("dragend", () => {
+                    const pos = marker.getLngLat();
+                    const valueLngLat = JSON.stringify({
+                        longitude: pos.lng,
+                        latitude: pos.lat,
+                    });
+                    setLngLat(valueLngLat);
+                    setValue("lngLat", valueLngLat);
+                });
+            } else {
+                // Nếu marker đã tồn tại → di chuyển marker
+                markerRef.current.setLngLat([lng, lat]);
+            }
+
+            // Cập nhật value form
+            setLngLat(newValue);
+            setValue("lngLat", newValue, { shouldDirty: true });
+        };
+
+        map.on("click", handleClick);
+
+        return () => {
+            map.off("click", handleClick);
+            if (markerRef.current) {
+                markerRef.current.remove()
+                markerRef.current = null
+            }
+
+        };
+    }, [setLngLat, setValue]);
 
 
     useEffect(() => {

@@ -5,7 +5,7 @@ import GenerateAPIKey from './_components/GenerateAPIKey'
 
 const PageToken = () => {
     return (
-        <Box w={'full'} mt={5}>
+        <Box w={'full'} mt={5} pr={{ base: "40px", md: 0 }}>
             <Heading size={'2xl'} fontWeight={'bold'}>
                 Mã truy cập (API Key)
             </Heading>

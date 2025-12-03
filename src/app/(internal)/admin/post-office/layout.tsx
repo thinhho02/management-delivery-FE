@@ -7,7 +7,7 @@ const LayoutManagePostOffice = ({
     children: React.ReactNode;
 }>) => {
     return (
-        <Box w={'full'} mt={5}>
+        <Box w={'full'} mt={5} pr={{ base: "40px", md: 0 }}>
             <Heading size={'2xl'} fontWeight={'bold'}>
                 Quản lí bưu cục
             </Heading>

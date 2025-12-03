@@ -12,11 +12,6 @@ export interface IZoneInfo {
   code: string;
 }
 
-export interface IManager {
-  _id: string;
-  name: string;
-}
-
 export interface IPostOfficeRow {
   _id: string;
   name: string;
@@ -32,7 +27,7 @@ export interface IPostOfficeRow {
 
 const columnHelper = createColumnHelper<IPostOfficeRow>();
 
-const zoneFieldMap = {
+export const zoneFieldMap = {
   sorting_center: "regionId",
   distribution_hub: "provinceId",
   delivery_office: "wardId",

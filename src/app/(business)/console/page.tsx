@@ -1,10 +1,8 @@
-import { Box } from '@chakra-ui/react'
-import React from 'react'
+import { redirect } from "next/navigation"
+
 
 const Page = () => {
-  return (
-    <Box ml={5} h={'200vh'}>PageConsole</Box>
-  )
+  return redirect("/console/new-order")
 }
 
 export default Page

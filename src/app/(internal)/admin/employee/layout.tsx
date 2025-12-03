@@ -7,18 +7,11 @@ const LayoutManageEmployee = ({
     children: React.ReactNode;
 }>) => {
     return (
-        <Box w={'full'} mt={5}>
+        <Box w={'full'} mt={5} pr={{ base: "40px", md: 0 }}>
             <Heading size={'2xl'} fontWeight={'bold'}>
                 Quản lí nhân viên
             </Heading>
-            <HStack mt={10} w={'full'} justify={'space-between'}>
-                <Heading size={'lg'} fontWeight={'medium'}>
-                    Danh sách nhân viên
-                </Heading>
-                <Suspense>
-                    {/* <AddNewFormPost /> */}
-                </Suspense>
-            </HStack>
+
             <Box mt={7}>
                 {children}
             </Box>

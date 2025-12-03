@@ -5,20 +5,21 @@ import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
 import { RiArrowDropRightFill } from 'react-icons/ri'
 import { FiSidebar } from 'react-icons/fi';
-import { ColorModeButton } from '../ui/color-mode'
-import LinkCustom from '../ui/LinkCustom'
-import { useUserBusiness } from '@/app/(business)/_providers/UserProviderBusiness'
-import LogoutButtonBusiness from './LogoutButtonBusiness'
+import { ColorModeButton } from '@/components/ui/color-mode'
+import LinkCustom from '@/components/ui/LinkCustom'
+import { useUserInternal } from '@/app/(internal)/_providers/UserProviderInternal'
+import LogoutButtonInternal from './LogoutButtonInternal'
 
 
-const AsideBusiness = () => {
-    const { user } = useUserBusiness()
+const AsideAdmin = () => {
+    const { user } = useUserInternal()
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
     const items = [
-        { value: "1", title: "Trang chủ", href: "/console" },
-        { value: "2", title: "Token", href: "/console/token" },
-        { value: "3", title: "Cài đặt", href: "/console/setting" }
+        { value: "1", title: "Trang chủ", href: "/admin" },
+        { value: "2", title: "Khu vực hoạt động", href: "/admin/map" },
+        { value: "3", title: "Quản lý bưu cục", href: "/admin/post-office" },
+        { value: "4", title: "Quản lý nhân viên", href: "/admin/employee" },
     ]
     return (
         <Box>
@@ -61,9 +62,12 @@ const AsideBusiness = () => {
 
                         <VStack align="start">
                             {items.map((item) => {
+                                // const lastPathname = pathname.split("/").filter(Boolean).at(-1) as string;
+                                // const lastItemHref = item.href.split("/").filter(Boolean).at(-1) as string
+                                // const isActive = lastPathname === lastItemHref
                                 const isActive =
-                                    (item.href === '/console' && pathname === '/console') || // chỉ sáng khi đúng trang index
-                                    (item.href !== '/console' && pathname.startsWith(item.href));
+                                    (item.href === '/admin' && pathname === '/admin') || // chỉ sáng khi đúng trang index
+                                    (item.href !== '/admin' && pathname.startsWith(item.href));
                                 return (
                                     <LinkCustom
                                         key={item.value}
@@ -94,7 +98,7 @@ const AsideBusiness = () => {
                         </VStack>
                     </Flex>
                     <Box alignSelf={'start'}>
-                        <LogoutButtonBusiness />
+                        <LogoutButtonInternal />
                     </Box>
                 </VStack>
             </Box>
@@ -139,8 +143,8 @@ const AsideBusiness = () => {
                                 <VStack align="start" spaceY={1} >
                                     {items.map((item) => {
                                         const isActive =
-                                            (item.href === '/console' && pathname === '/console') || // chỉ sáng khi đúng trang index
-                                            (item.href !== '/console' && pathname.startsWith(item.href));
+                                            (item.href === '/admin' && pathname === '/admin') || // chỉ sáng khi đúng trang index
+                                            (item.href !== '/admin' && pathname.startsWith(item.href));
                                         return (
                                             <LinkCustom
                                                 key={item.value}
@@ -173,7 +177,7 @@ const AsideBusiness = () => {
                             </Drawer.Body>
                             <Drawer.Footer>
                                 <Box alignSelf={'start'}>
-                                    <LogoutButtonBusiness />
+                                    <LogoutButtonInternal />
                                 </Box>
                             </Drawer.Footer>
                         </Drawer.Content>
@@ -184,4 +188,4 @@ const AsideBusiness = () => {
     )
 }
 
-export default AsideBusiness
+export default AsideAdmin

@@ -49,7 +49,7 @@ const PostOfficeTable = () => {
         page,
     });
 
-
+    console.log(123)
     const [sorting, setSorting] = useState<SortingState>([]);
     const table = useReactTable({
         data,

@@ -5,8 +5,8 @@ import { Button } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation';
 import React from 'react'
 import { RiLogoutBoxLine } from 'react-icons/ri'
-import { toaster } from '../ui/toaster';
 import { useSocketBusiness } from '@/app/(business)/_providers/SocketProviderBusiness';
+import { toaster } from '@/components/ui/toaster';
 
 const LogoutButtonBusiness = () => {
     const router = useRouter();

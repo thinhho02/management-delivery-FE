@@ -1,0 +1,450 @@
+"use client";
+
+import {
+    Box,
+    Table,
+    Spinner,
+    Center,
+    HStack,
+    Pagination,
+    ButtonGroup,
+    IconButton,
+    ActionBar,
+    Portal,
+    Button,
+    createListCollection,
+    Select
+} from "@chakra-ui/react";
+
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import {
+    useReactTable,
+    getCoreRowModel,
+    flexRender,
+    SortingState,
+} from "@tanstack/react-table";
+
+import { LuChevronLeft, LuChevronRight, LuSquarePlus, LuTrash2 } from "react-icons/lu";
+
+import { Tooltip } from "@/components/ui/tooltip";
+import { toaster } from "@/components/ui/toaster";
+import { create, update } from "@/apis/apiCore";
+import { PickupColumns } from "../_libs/columnsPickup";
+import { usePickupOrders } from "../_hooks/usePickupOrder";
+import ScanDialog from "./ScanDialog";
+
+
+// ================================
+// ENUM STATUS PICKUP
+// ================================
+const statusOptions = createListCollection({
+    items: [
+        { label: "Đã tạo đơn", value: "created" },
+        { label: "Chờ lấy hàng", value: "waiting_pickup" },
+        { label: "Đã lấy hàng", value: "pickup" },
+        { label: "Đã nhập kho", value: "arrival" },
+        { label: "Đã xuất kho", value: "departure" },
+        { label: "Đang giao hàng", value: "delivery_attempt" },
+        { label: "Giao thành công", value: "delivered" },
+        { label: "Chuyển hoàn", value: "returned" },
+        { label: "Đã hủy", value: "cancelled" },
+        { label: "Thất lạc", value: "lost" },
+        { label: "Hư hỏng", value: "damaged" },
+    ]
+});
+
+const pickOptions = createListCollection({
+    items: [
+        { label: "Shipper lấy hàng", value: "pick_home" },
+        { label: "Gửi tại bưu cục", value: "printed" },
+    ],
+});
+
+export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-office" | "delivery-office" }) {
+    const [page, setPage] = useState(1);
+    const [valueStatus, setValueStatus] = useState<string[]>(["created"]);
+    const [valuePick, setValuePick] = useState<string[]>([""]);
+
+    const [selected, setSelected] = useState<Record<string, boolean>>({});
+
+    const [isPending, startTransitrion] = useTransition();
+
+    const [sorting, setSorting] = useState<SortingState>([]);
+
+    // ================================
+    // FETCH API
+    // ================================
+    const { data, pagination, loading, mutate, postId } = usePickupOrders({
+        typeOffice,
+        page,
+        status: valueStatus[0],
+        pick: valuePick[0],
+    });
+
+    // Reset checkbox khi thay đổi filter
+    useEffect(() => {
+        setSelected({});
+    }, [valueStatus, valuePick, page]);
+
+    const toggleOne = useCallback((id: string, v: boolean) => {
+        setSelected((cur) => ({ ...cur, [id]: v }));
+    }, []);
+
+    const selectedCount = useMemo(() => Object.values(selected).filter(Boolean).length, [selected]);
+    const someSelected = selectedCount > 0;
+
+    const columns = useMemo(
+        () => PickupColumns(selected, toggleOne),
+        [selected, toggleOne]
+    );
+
+    const tableData = useMemo(() => data ?? [], [data]);
+
+    const table = useReactTable({
+        data: tableData,
+        columns,
+        state: { sorting },
+        getCoreRowModel: getCoreRowModel(),
+    });
+
+    // ================================
+    // HANDLE PRINT BULK
+    // ================================
+    const handlePrintBulk = (selectedOrders: any[], canPrint: boolean) => {
+        if (!canPrint) return;
+        console.log(selectedOrders)
+
+        // startPrint(async () => {
+        //     const ids = selectedOrders.map((o) => o._id);
+
+        //     const res = await create<any>(
+        //         `/order/print-bulk`,
+        //         { orderIds: ids, size: "A6" },
+        //         { responseType: "blob" }
+        //     );
+
+        //     if (!res.success) {
+        //         return toaster.error({
+        //             id: "print-error",
+        //             title: "In thất bại",
+        //             description: res.error,
+        //         });
+        //     }
+
+        //     const url = URL.createObjectURL(res.result);
+
+        //     window.open(url, "_blank");
+
+        //     mutate();
+        // });
+    };
+
+    // ================================
+    // HANDLE CANCEL
+    // ================================
+    const handleArrangeTransport = (selectedOrders: any[]) => {
+        console.log(selectedOrders)
+        startTransitrion(async () => {
+            const ids = selectedOrders.map((o) => o._id);
+
+            const res = await update<any>("/order/pickup-office/arrange-transport", { orderIds: ids });
+
+            if (!res.success) {
+                toaster.error({
+                    id: `Arrange-${Date.now()}`,
+                    title: "Sắp xếp vận chuyển thất bại",
+                    description: res.error
+                });
+                return;
+            }
+
+            const { arranged, failed } = res.result;
+            console.log(arranged, failed)
+            if (failed.length > 0) {
+                const reason = failed.map((f: any) => f.reason)
+                toaster.error({
+                    id: `Arrange-${Date.now()}`,
+                    title: "Sắp xếp vận chuyển thất bại",
+                    description: reason.join(", ")
+                });
+                return;
+            }
+            // ================================
+            // UPDATE LOCAL SWR CACHE
+            // ================================
+            mutate(prev => {
+                if (!prev?.success) return prev;
+
+                const updatedRows = prev.result.orders.map(o => {
+                    const updated = arranged.find((x: any) => x._id === o._id);
+                    return updated ? { ...o, ...updated } : o;
+                });
+
+                return {
+                    ...prev,
+                    result: {
+                        ...prev.result,
+                        orders: updatedRows
+                    }
+                };
+            }, false);
+
+            setSelected({});
+
+
+            toaster.success({
+                id: `Arrange-${Date.now()}`,
+                title: "Sắp xếp vận chuyển thành công"
+            });
+
+        });
+    };
+
+    return (
+        <Box my={6}>
+            {/* ============================================
+                FILTER BAR
+            ============================================= */}
+            <HStack mb={4} justify={'space-between'} flexWrap={'wrap'}>
+                {/* status */}
+                <HStack gap={5}>
+                    <Select.Root
+                        value={valueStatus}
+                        onValueChange={(e) => {
+                            setValueStatus(e.value);
+                            setPage(1);
+                        }}
+                        w="200px"
+                        collection={statusOptions}
+                    >
+                        <Select.HiddenSelect />
+                        <Select.Control>
+                            <Select.Trigger>
+                                <Select.ValueText placeholder="Trạng thái đơn" />
+                            </Select.Trigger>
+                            <Select.IndicatorGroup>
+                                <Select.Indicator />
+                            </Select.IndicatorGroup>
+                        </Select.Control>
+
+                        <Portal>
+                            <Select.Positioner>
+                                <Select.Content>
+                                    {statusOptions.items.map((s) => (
+                                        <Select.Item key={s.value} item={s}>
+                                            {s.label}
+                                            <Select.ItemIndicator />
+                                        </Select.Item>
+                                    ))}
+                                </Select.Content>
+                            </Select.Positioner>
+                        </Portal>
+                    </Select.Root>
+
+                    {/* pick option */}
+                    <Select.Root
+                        value={valuePick}
+                        onValueChange={(e) => {
+                            setValuePick(e.value);
+                            setPage(1);
+                        }}
+                        w="200px"
+                        collection={pickOptions}
+                    >
+                        <Select.HiddenSelect />
+                        <Select.Control>
+                            <Select.Trigger>
+                                <Select.ValueText placeholder="Hình thức lấy hàng" />
+                            </Select.Trigger>
+                            <Select.IndicatorGroup>
+                                <Select.Indicator />
+                            </Select.IndicatorGroup>
+                        </Select.Control>
+
+                        <Portal>
+                            <Select.Positioner>
+                                <Select.Content>
+                                    {pickOptions.items.map((s) => (
+                                        <Select.Item key={s.value} item={s}>
+                                            {s.label}
+                                            <Select.ItemIndicator />
+                                        </Select.Item>
+                                    ))}
+                                </Select.Content>
+                            </Select.Positioner>
+                        </Portal>
+                    </Select.Root>
+                </HStack>
+                <HStack gap={5}>
+                    <ScanDialog mutate={mutate} type="arrival" officeId={postId} />
+                    <ScanDialog mutate={mutate} type="departure" officeId={postId} />
+
+                </HStack>
+            </HStack>
+
+            {/* ============================================
+                TABLE
+            ============================================= */}
+            <Table.ScrollArea borderWidth="1px">
+                <Table.Root
+                    variant="outline"
+                    size="sm"
+                    native
+                    interactive
+                    textStyle={'xs'}
+                    css={{
+                        "& [data-sticky]": {
+                            position: "sticky",
+                            zIndex: 1,
+
+
+                        },
+                    }}
+                >
+                    <Table.Header>
+                        {table.getHeaderGroups().map((hg) => (
+                            <Table.Row key={hg.id}>
+                                {hg.headers.map((header) => (
+                                    <Table.ColumnHeader
+                                        key={header.id}
+                                        data-sticky={(header.column.columnDef.meta as any)?.sticky}
+                                        left={(header.column.columnDef.meta as any)?.left}
+                                        css={{
+                                            bg: (header.column.columnDef.meta as any)?.bg,
+                                            minWidth: (header.column.columnDef.meta as any)?.width,
+                                            textAlign: header.column.id !== 'orderCode' ? "center" : undefined
+                                        }}
+                                    >
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                    </Table.ColumnHeader>
+                                ))}
+                            </Table.Row>
+                        ))}
+                    </Table.Header>
+
+                    <Table.Body>
+                        {loading ? (
+                            <Table.Row>
+                                <Table.Cell colSpan={columns.length}>
+                                    <Center py={4}>
+                                        <Spinner size="sm" />
+                                    </Center>
+                                </Table.Cell>
+                            </Table.Row>
+                        ) : data && data.length === 0 ? (
+                            <Table.Row>
+                                <Table.Cell colSpan={columns.length} textAlign="center">
+                                    Không có dữ liệu
+                                </Table.Cell>
+                            </Table.Row>
+                        ) : (
+                            table.getRowModel().rows.map((row) => (
+                                <Table.Row key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <Table.Cell
+                                            key={cell.id}
+                                            textAlign={cell.column.id !== 'orderCode' ? "center" : undefined}
+                                            data-sticky={(cell.column.columnDef.meta as any)?.sticky}
+                                            left={(cell.column.columnDef.meta as any)?.left}
+                                            css={{
+                                                bg: (cell.column.columnDef.meta as any)?.bg,
+                                                minWidth: (cell.column.columnDef.meta as any)?.width,
+                                            }}
+                                        >
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </Table.Cell>
+                                    ))}
+                                </Table.Row>
+                            ))
+                        )}
+                    </Table.Body>
+                </Table.Root>
+            </Table.ScrollArea>
+
+            {/* ============================================
+                PAGINATION
+            ============================================= */}
+            <HStack justify="center" mt={4}>
+                <Pagination.Root
+                    page={page}
+                    count={pagination?.totalPages || 1}
+                    pageSize={1}
+                    onPageChange={(e) => setPage(e.page)}
+                >
+                    <ButtonGroup variant="ghost" size="sm">
+                        <Pagination.PrevTrigger asChild>
+                            <IconButton>
+                                <LuChevronLeft />
+                            </IconButton>
+                        </Pagination.PrevTrigger>
+
+                        <Pagination.Items
+                            render={(item) => (
+                                <IconButton key={item.value} variant={{ base: "ghost", _selected: "outline" }}>
+                                    {item.value}
+                                </IconButton>
+                            )}
+                        />
+
+                        <Pagination.NextTrigger asChild>
+                            <IconButton>
+                                <LuChevronRight />
+                            </IconButton>
+                        </Pagination.NextTrigger>
+                    </ButtonGroup>
+                </Pagination.Root>
+            </HStack>
+
+            {/* ============================================
+                ACTION BAR
+            ============================================= */}
+            <ActionBar.Root open={someSelected}>
+                <Portal>
+                    <ActionBar.Positioner>
+                        <ActionBar.Content bgColor="gray.subtle">
+                            <ActionBar.SelectionTrigger>
+                                {selectedCount} đơn đã chọn
+                            </ActionBar.SelectionTrigger>
+
+                            <ActionBar.Separator />
+
+                            {/* ---- Sắp xếp vận chuyển ---- */}
+                            {(() => {
+                                if (!data) return null;
+
+                                const selectedOrders = data.filter(o => selected[o._id]);
+
+                                const canArrange = selectedOrders.length > 0 &&
+                                    selectedOrders.every(o => o.status === "pending");
+
+                                const arrangeTooltip = canArrange
+                                    ? "Sắp xếp vận chuyển cho các đơn hàng đã chọn"
+                                    : "Không thể sắp xếp vì có đơn hàng không ở trạng thái 'Đang xử lý'";
+
+                                return (
+                                    <Tooltip content={arrangeTooltip}>
+                                        <Button
+                                            size="sm"
+                                            variant="solid"
+                                            bgColor="blue.600"
+                                            _hover={{ bgColor: "blue.500" }}
+                                            loading={isPending}
+                                            disabled={!canArrange}
+                                            onClick={() => {
+                                                if (!canArrange) return;
+                                                handleArrangeTransport(selectedOrders);
+                                            }}
+                                        >
+                                            Sắp xếp vận chuyển
+                                        </Button>
+                                    </Tooltip>
+                                );
+                            })()}
+
+                        </ActionBar.Content>
+                    </ActionBar.Positioner>
+                </Portal>
+            </ActionBar.Root>
+        </Box>
+    );
+}

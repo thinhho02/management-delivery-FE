@@ -7,13 +7,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import z from 'zod'
-import { ResponsePost } from '../_server/getPost'
 import { Geometry } from 'geojson'
 import { debounce } from '@/libs/debounce'
 import axios from 'axios'
 import { HiCheck, HiX } from 'react-icons/hi'
 import dynamic from 'next/dynamic'
 import { toaster } from '@/components/ui/toaster'
+import { ResponsePost } from './MainDetailPost'
 
 const DetailPostMap = dynamic(() => import('./DetailPostMap'), { ssr: false });
 
@@ -92,8 +92,8 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
         initialItems: [],
         filter: contains,
     })
-    const { collection: collectionAddress, filter: filterAddress, set: setAddress } = useListCollection<{ id: string; label: string, value: string, coordinates: string }>({
-        initialItems: [],
+    const { collection: collectionAddress, filter: filterAddress, set: setAddress } = useListCollection<{ id: string, label: string, value: string, coordinates: string }>({
+        initialItems: [{ id: post._id, label: addressPost[1], value: addressPost[1], coordinates: lngLatPost }],
         filter: contains,
     })
 
@@ -345,7 +345,7 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
                                                     collection={collectionAddress}
                                                     value={field.value ? [field.value] : []}
                                                     onValueChange={(details) => {
-                                                        setLngLat(details.items[0].coordinates)
+                                                        setLngLat(details.items[0]?.coordinates)
                                                         field.onChange(details.value[0] || "")
                                                     }}
                                                     defaultInputValue={addressPost[1]}

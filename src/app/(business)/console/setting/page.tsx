@@ -9,19 +9,7 @@ import FormProfileBusiness from './_components/FormProfileBusiness';
 import { useForm } from 'react-hook-form';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import z from 'zod';
-import FormAddAddress from './_components/FormAddAddress';
-
-
-const formSchema = z.object({
-    email: z.string()
-        .min(1, { message: "Chưa điền thông tin" })
-        .pipe(z.email({ message: "Định dạng email không hợp lệ" })),
-    name: z.string().min(1, "Chưa điền tên doanh nghiệp"),
-})
-
-type FormValues = z.infer<typeof formSchema>
-
-
+import InfoUserByBusiness from './_components/InfoUserByBusiness';
 
 const PageProfile = () => {
     const { user, mutateUser } = useUserBusiness()
@@ -87,7 +75,7 @@ const PageProfile = () => {
             </Tabs.Root>
             <Box divideY={'1px'}>
                 <FormProfileBusiness user={user} mutateUser={mutateUser} />
-                <FormAddAddress />
+                <InfoUserByBusiness />
             </Box>
         </Box>
     )

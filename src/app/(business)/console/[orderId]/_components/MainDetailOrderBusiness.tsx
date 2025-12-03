@@ -1,0 +1,60 @@
+'use client'
+
+import { get } from '@/apis/apiCore'
+import LinkCustom from '@/components/ui/LinkCustom'
+import { Box, Breadcrumb, Center, Heading, HStack, Spinner } from '@chakra-ui/react'
+import React, { useEffect } from 'react'
+import useSWR from 'swr'
+import { ResponseDetailOrder } from '../_types/responseDetailOrder'
+import { notFound } from 'next/navigation'
+import InfoOrderDetailBusiness from './InfoOrderDetailBusiness'
+
+const MainDetailOrderBusiness = ({ orderId }: { orderId: string }) => {
+    const { data, mutate, isLoading } = useSWR(`/order/business/${orderId}`, get<{ order: ResponseDetailOrder }>, { revalidateOnFocus: false })
+
+
+    useEffect(() => {
+        if (!data) return;
+
+        if (!data.success) {
+            notFound()
+        }
+    }, [data])
+
+    if (!data || !data.success || isLoading) {
+        return (
+            <Box w={'full'}>
+                <Center>
+                    <Spinner size={'sm'} />
+                </Center>
+            </Box>
+        )
+    }
+    const order = data.result.order
+        return(
+            <Box>
+                <HStack mt={10} w={'full'} justify={'space-between'}>
+                    <Heading size={'md'} fontWeight={'medium'}>
+                        <Breadcrumb.Root>
+                            <Breadcrumb.List>
+                                <Breadcrumb.Item>
+                                    <Breadcrumb.Link asChild>
+                                        <LinkCustom href={'/console/tracking-order'}>
+                                            Quay lại
+                                        </LinkCustom>
+                                    </Breadcrumb.Link>
+                                </Breadcrumb.Item>
+                                <Breadcrumb.Separator />
+                                <Breadcrumb.Item>
+                                    <Breadcrumb.CurrentLink>{order.shipment.trackingCode}</Breadcrumb.CurrentLink>
+                                </Breadcrumb.Item>
+                            </Breadcrumb.List>
+                        </Breadcrumb.Root>
+                    </Heading>
+                </HStack>
+                <InfoOrderDetailBusiness order={order} onSuccess={() => mutate()} />
+            </Box>
+        )
+}
+
+export default MainDetailOrderBusiness

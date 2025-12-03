@@ -2,7 +2,7 @@ import { create } from '@/apis/apiCore';
 import { useUserInternal } from '@/app/(internal)/_providers/UserProviderInternal';
 import { useRouter } from 'next/navigation';
 import React from 'react'
-import { toaster } from '../ui/toaster';
+import { toaster } from '@/components/ui/toaster';
 import { broadcastAuthEvent, clearAccessToken } from '@/libs/tokenMemory';
 import { Button } from '@chakra-ui/react';
 import { RiLogoutBoxLine } from 'react-icons/ri';

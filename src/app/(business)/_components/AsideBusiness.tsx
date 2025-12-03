@@ -5,21 +5,22 @@ import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
 import { RiArrowDropRightFill } from 'react-icons/ri'
 import { FiSidebar } from 'react-icons/fi';
-import { ColorModeButton } from '../ui/color-mode'
-import LinkCustom from '../ui/LinkCustom'
-import { useUserInternal } from '@/app/(internal)/_providers/UserProviderInternal'
-import LogoutButtonInternal from './LogoutButtonInternal'
+import { useUserBusiness } from '@/app/(business)/_providers/UserProviderBusiness'
+import { ColorModeButton } from '@/components/ui/color-mode'
+import LinkCustom from '@/components/ui/LinkCustom'
+import LogoutButtonBusiness from './LogoutButtonBusiness'
 
 
-const AsideAdmin = () => {
-    const { user } = useUserInternal()
+const AsideBusiness = () => {
+    const { user } = useUserBusiness()
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
     const items = [
-        { value: "1", title: "Trang chủ", href: "/admin" },
-        { value: "2", title: "Khu vực hoạt động", href: "/admin/map" },
-        { value: "3", title: "Quản lý bưu cục", href: "/admin/post-office" },
-        { value: "4", title: "Quản lý nhân viên", href: "/admin/employee" },
+        { value: "2", title: "Tạo đơn hàng", href: "/console/new-order" },
+        { value: "3", title: "Trò chuyện/ Khiếu nại", href: "/console/chat" },
+        { value: "4", title: "Tra cứu đơn hàng", href: "/console/tracking-order" },
+        { value: "5", title: "Token", href: "/console/token" },
+        { value: "6", title: "Cài đặt tài khoản", href: "/console/setting" }
     ]
     return (
         <Box>
@@ -62,12 +63,9 @@ const AsideAdmin = () => {
 
                         <VStack align="start">
                             {items.map((item) => {
-                                // const lastPathname = pathname.split("/").filter(Boolean).at(-1) as string;
-                                // const lastItemHref = item.href.split("/").filter(Boolean).at(-1) as string
-                                // const isActive = lastPathname === lastItemHref
                                 const isActive =
-                                    (item.href === '/admin' && pathname === '/admin') || // chỉ sáng khi đúng trang index
-                                    (item.href !== '/admin' && pathname.startsWith(item.href));
+                                    (item.href === '/console' && pathname === '/console') || // chỉ sáng khi đúng trang index
+                                    (item.href !== '/console' && pathname.startsWith(item.href));
                                 return (
                                     <LinkCustom
                                         key={item.value}
@@ -98,14 +96,14 @@ const AsideAdmin = () => {
                         </VStack>
                     </Flex>
                     <Box alignSelf={'start'}>
-                        <LogoutButtonInternal />
+                        <LogoutButtonBusiness />
                     </Box>
                 </VStack>
             </Box>
             <Drawer.Root open={open} onOpenChange={(e) => setOpen(e.open)} placement={'start'}>
                 <Drawer.Trigger asChild>
                     <Button variant={'ghost'}
-                        size="md" display={{ base: "flex", md: "none" }} position={'fixed'} left={0} top={0}>
+                        size="md" display={{ base: "flex", md: "none" }} position={'fixed'} left={0} top={0} zIndex={'999'}>
                         <FiSidebar />
                         Mở thanh menu
                     </Button>
@@ -143,8 +141,8 @@ const AsideAdmin = () => {
                                 <VStack align="start" spaceY={1} >
                                     {items.map((item) => {
                                         const isActive =
-                                            (item.href === '/admin' && pathname === '/admin') || // chỉ sáng khi đúng trang index
-                                            (item.href !== '/admin' && pathname.startsWith(item.href));
+                                            (item.href === '/console' && pathname === '/console') || // chỉ sáng khi đúng trang index
+                                            (item.href !== '/console' && pathname.startsWith(item.href));
                                         return (
                                             <LinkCustom
                                                 key={item.value}
@@ -177,7 +175,7 @@ const AsideAdmin = () => {
                             </Drawer.Body>
                             <Drawer.Footer>
                                 <Box alignSelf={'start'}>
-                                    <LogoutButtonInternal />
+                                    <LogoutButtonBusiness />
                                 </Box>
                             </Drawer.Footer>
                         </Drawer.Content>
@@ -188,4 +186,4 @@ const AsideAdmin = () => {
     )
 }
 
-export default AsideAdmin
+export default AsideBusiness

@@ -18,7 +18,7 @@ const LayoutMap = ({
         { label: "Danh sách khu vực", href: "/admin/map/list-tiles" },
     ];
     return (
-        <Box w={'full'} mt={5}>
+        <Box w={'full'} mt={5} pr={{ base: "40px", md: 0 }}>
             <Heading size={'2xl'} fontWeight={'bold'}>
                 Quản lí khu vực hoạt động
             </Heading>

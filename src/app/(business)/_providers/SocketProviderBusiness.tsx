@@ -38,6 +38,7 @@ export function SocketProviderBusiness({ children }: { children: React.ReactNode
             console.log("Socket connected:", socketInstance.id);
             console.log(user)
             socketInstance.emit("join:room_session", { sessionId: user.sid })
+            socketInstance.emit("join:business_join", { businessId: user.account._id })
             setIsConnected(true);
         });
 
@@ -55,6 +56,7 @@ export function SocketProviderBusiness({ children }: { children: React.ReactNode
             socketInstance.off("connect");
             socketInstance.off("disconnect");
             socketInstance.off("connect_error");
+            socketInstance.emit("leave:business_join", { businessId: user.account.id })
         };
     }, []);
 

@@ -5,7 +5,7 @@ import { SocketProviderBusiness } from '../_providers/SocketProviderBusiness';
 
 
 const ToasterNotifyBusiness = dynamic(() => import('@/app/(business)/_components/ToasterNotifyBusiness'));
-const AsideBusiness = dynamic(() => import('@/components/layoutBusiness/AsideBusiness'));
+const AsideBusiness = dynamic(() => import('@/app/(business)/_components/AsideBusiness'));
 
 const RootLayoutConsole = ({
   children,
@@ -20,7 +20,7 @@ const RootLayoutConsole = ({
           <AsideBusiness />
           <Box w={'full'}
             pr={8}
-            pl={{ base: "0", md: "332px" }}
+            pl={{ base: "40px", md: "332px" }}
             mt={{ base: "2.5rem", md: "0" }}>
             {children}
           </Box>

@@ -88,7 +88,7 @@ const FormChangePassword = () => {
                                     <Field.RequiredIndicator />
                                 </Field.Label>
                                 <InputGroup endElement={<Button p={0} variant={'plain'} size={'sm'} onClick={() => setSeePassCurrent(!seePassCurrent)}>{seePassCurrent ? <LuEye /> : <LuEyeClosed />}</Button>}>
-                                    <Input {...register('currentPassword')} type={seePassCurrent ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập mật khẩu mới' />
+                                    <Input {...register('currentPassword')} type={seePassCurrent ? "text" : "password"} placeholder='Nhập mật khẩu mới' />
                                 </InputGroup>
                                 <Field.ErrorText>{errors.currentPassword?.message}</Field.ErrorText>
                             </Field.Root>
@@ -98,7 +98,7 @@ const FormChangePassword = () => {
                                     <Field.RequiredIndicator />
                                 </Field.Label>
                                 <InputGroup endElement={<Button p={0} variant={'plain'} size={'sm'} onClick={() => setSeePassNew(!seePassNew)}>{seePassNew ? <LuEye /> : <LuEyeClosed />}</Button>}>
-                                    <Input {...register('newPassword')} type={seePassNew ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập mật khẩu mới' />
+                                    <Input {...register('newPassword')} type={seePassNew ? "text" : "password"} placeholder='Nhập mật khẩu mới' />
                                 </InputGroup>
                                 <Field.ErrorText>{errors.newPassword?.message}</Field.ErrorText>
                             </Field.Root>
@@ -108,7 +108,7 @@ const FormChangePassword = () => {
                                     <Field.RequiredIndicator />
                                 </Field.Label>
                                 <InputGroup endElement={<Button p={0} variant={'plain'} size={'sm'} onClick={() => setSeePassVerify(!seePassVerify)}>{seePassVerify ? <LuEye /> : <LuEyeClosed />}</Button>}>
-                                    <Input {...register('confirmPassword')} type={seePassVerify ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập mật khẩu mới' />
+                                    <Input {...register('confirmPassword')} type={seePassVerify ? "text" : "password"} placeholder='Nhập mật khẩu mới' />
                                 </InputGroup>
                                 <Field.ErrorText>{errors.confirmPassword?.message}</Field.ErrorText>
                             </Field.Root>
@@ -322,7 +322,7 @@ const dialog = createOverlay<DialogProps>((props) => {
                                                     name='email'
                                                     render={({ field }) => (
                                                         <Group attached w={'full'}>
-                                                            <Input type="text" ref={inputEmailRef} readOnly={renderVerify} value={field.value} flex={1} borderColor={'gray.300'} placeholder='Nhập địa chỉ Email của bạn' onChange={(e) => field.onChange(e.target.value)} />
+                                                            <Input type="text" ref={inputEmailRef} readOnly={renderVerify} outline={'none'} value={field.value} flex={1} borderColor={'gray.300'} placeholder='Nhập địa chỉ Email của bạn' onChange={(e) => field.onChange(e.target.value)} />
                                                             <Button w={'70px'} type='button' loading={isPending} disabled={seconds > 0} bgColor="gray.600" color={'white'} _hover={{ bgColor: "gray.500" }} onClick={handleSendOTP}>
                                                                 {seconds > 0 ? `${seconds}s` : "Gửi mã"}
                                                             </Button>
@@ -334,7 +334,7 @@ const dialog = createOverlay<DialogProps>((props) => {
                                             {renderVerify && (
                                                 <Field.Root invalid={!!form1.formState.errors.verifyEmail}>
                                                     <Field.Label>Mã xác thực</Field.Label>
-                                                    <Input {...form1.register('verifyEmail')} type='text' borderColor={'gray.300'} placeholder='Nhập mã xác minh' />
+                                                    <Input {...form1.register('verifyEmail')} type='text' placeholder='Nhập mã xác minh' />
                                                     <Field.ErrorText>{form1.formState.errors.verifyEmail?.message}</Field.ErrorText>
                                                 </Field.Root>
                                             )}
@@ -354,15 +354,15 @@ const dialog = createOverlay<DialogProps>((props) => {
                                         <Fieldset.Content>
                                             <Field.Root invalid={!!form2.formState.errors.newPassword}>
                                                 <Field.Label>Mật khẩu mới</Field.Label>
-                                                <InputGroup endElement={<Button p={0} variant={'plain'} color={'black'} size={'sm'} onClick={() => setSeePassNew(!seePassNew)}>{seePassNew ? <LuEye /> : <LuEyeClosed />}</Button>}>
-                                                    <Input {...form2.register('newPassword')} type={seePassNew ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập mật khẩu mới' />
+                                                <InputGroup endElement={<Button p={0} variant={'plain'} size={'sm'} onClick={() => setSeePassNew(!seePassNew)}>{seePassNew ? <LuEye /> : <LuEyeClosed />}</Button>}>
+                                                    <Input {...form2.register('newPassword')} type={seePassNew ? "text" : "password"} placeholder='Nhập mật khẩu mới' />
                                                 </InputGroup>
                                                 <Field.ErrorText>{form2.formState.errors.newPassword?.message}</Field.ErrorText>
                                             </Field.Root>
                                             <Field.Root invalid={!!form2.formState.errors.verifyNewPassword}>
                                                 <Field.Label>Nhập lại mật khẩu mới</Field.Label>
-                                                <InputGroup endElement={<Button p={0} variant={'plain'} color={'black'} size={'sm'} onClick={() => setSeePassVerify(!seePassVerify)}>{seePassVerify ? <LuEye /> : <LuEyeClosed />}</Button>}>
-                                                    <Input {...form2.register('verifyNewPassword')} type={seePassVerify ? "text" : "password"} borderColor={'gray.300'} placeholder='Nhập lại mật khẩu mới' />
+                                                <InputGroup endElement={<Button p={0} variant={'plain'} size={'sm'} onClick={() => setSeePassVerify(!seePassVerify)}>{seePassVerify ? <LuEye /> : <LuEyeClosed />}</Button>}>
+                                                    <Input {...form2.register('verifyNewPassword')} type={seePassVerify ? "text" : "password"} placeholder='Nhập lại mật khẩu mới' />
                                                 </InputGroup>
                                                 <Field.ErrorText>{form2.formState.errors.verifyNewPassword?.message}</Field.ErrorText>
                                             </Field.Root>

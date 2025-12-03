@@ -5,7 +5,7 @@ export interface ISessionResponse {
     loggedIn: boolean;
     accessToken: string;
     account: {
-        id: string;
+        _id: string;
         name: string;
         email: string;
         status: string;

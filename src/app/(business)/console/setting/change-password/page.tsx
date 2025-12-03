@@ -1,5 +1,4 @@
-import LinkCustom from '@/components/ui/LinkCustom'
-import { Box, Button, Field, Fieldset, Flex, Heading, Input, VStack } from '@chakra-ui/react'
+import { Box, Heading } from '@chakra-ui/react'
 import React from 'react'
 import FormChangePassword from './_components/FormChangePassword'
 
