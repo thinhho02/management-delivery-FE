@@ -56,7 +56,7 @@ export function SocketProviderBusiness({ children }: { children: React.ReactNode
             socketInstance.off("connect");
             socketInstance.off("disconnect");
             socketInstance.off("connect_error");
-            socketInstance.emit("leave:business_join", { businessId: user.account.id })
+            socketInstance.emit("leave:business_join", { businessId: user.account._id })
         };
     }, []);
 
