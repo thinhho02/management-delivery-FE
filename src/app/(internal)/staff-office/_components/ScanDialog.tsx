@@ -50,8 +50,6 @@ const ScanDialog = ({
         scanner.render(
             async (result: string) => {
                 console.log("QR Scanned:", result);
-                scanner.clear();
-                scannerRef.current = null;
                 await handleScan(result);
             },
             (err: any) => {
