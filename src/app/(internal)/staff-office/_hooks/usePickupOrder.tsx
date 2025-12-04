@@ -47,12 +47,12 @@ export interface IPickupOrder {
     weight: number;
     shipFee: number;
 
-    printed: boolean;
     currentType: PickupStatus;
     routePlan: IRouteStep[],
     events: IOrderEvent[],
     pick: "pick_home" | "pick_post";
 
+    amountCod?: number;
     createdAt: string;
 }
 

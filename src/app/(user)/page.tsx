@@ -42,7 +42,7 @@ export default function Page() {
         <Flex direction={'column'}>
           <Box position="relative" w="100%" h="360px">
 
-          <Button onClick={() => { playSound('/sound/success-scan.mp3') }}> sound </Button>
+          <Button onClick={() => { playSound('/sound/error-scan.mp3') }}> sound </Button>
 
           </Box>
           {/* Bản đồ */}

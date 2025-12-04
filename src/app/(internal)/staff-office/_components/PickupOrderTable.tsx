@@ -32,6 +32,7 @@ import { create, update } from "@/apis/apiCore";
 import { PickupColumns } from "../_libs/columnsPickup";
 import { usePickupOrders } from "../_hooks/usePickupOrder";
 import ScanDialog from "./ScanDialog";
+import { DeliveryColumns } from "../_libs/columnsDelivery";
 
 
 // ================================
@@ -94,7 +95,13 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
     const someSelected = selectedCount > 0;
 
     const columns = useMemo(
-        () => PickupColumns(selected, toggleOne),
+        () => {
+            if(typeOffice === "pickup-office"){
+                return PickupColumns(selected, toggleOne)
+            }else{
+                return DeliveryColumns(selected, toggleOne)
+            }
+        },
         [selected, toggleOne]
     );
 

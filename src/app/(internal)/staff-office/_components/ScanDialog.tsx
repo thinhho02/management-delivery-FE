@@ -120,7 +120,7 @@ const ScanDialog = ({
                         result: {
                             ...prev.result,
                             orders: prev.result.orders.map((o) =>
-                                o._id === updatedOrder._id ? { ...o, ...updatedOrder } : o
+                                o._id === updatedOrder._id ? { ...o, currentType: updatedOrder.shipment.currentType } : o
                             ),
                         },
                     };
