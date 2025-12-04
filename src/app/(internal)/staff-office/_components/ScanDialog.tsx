@@ -30,6 +30,8 @@ const ScanDialog = ({
     const [loadingScan, setLoadingScan] = useState(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const processingRef = useRef(false);
+    const lastScanRef = useRef(0);
+    const SCAN_DELAY = 1000;
     const containerId = "qr-reader-container";
 
     const startScanner = async () => {
@@ -46,7 +48,13 @@ const ScanDialog = ({
 
         },
             async (result: string) => {
-                // ⛔ CHẶN ĐANG SCAN LẦN TRƯỚC CHƯA XONG
+                const now = Date.now();
+
+                // Không scan nếu chưa đủ delay 1 giây
+                if (now - lastScanRef.current < SCAN_DELAY) return;
+                lastScanRef.current = now;
+                
+                // CHẶN ĐANG SCAN LẦN TRƯỚC CHƯA XONG
                 if (processingRef.current) return;
                 processingRef.current = true;
 
@@ -119,10 +127,10 @@ const ScanDialog = ({
                 },
                 false
             );
-            playSound('/public/sound/success-scan.mp3')
+            playSound('/sound/success-scan.mp3')
         } else {
             toaster.error({ id: "error-scan", title: "Lỗi", description: res.error });
-            playSound('/public/sound/error-scan.mp3')
+            playSound('/sound/error-scan.mp3')
         }
 
         setLoadingScan(false);

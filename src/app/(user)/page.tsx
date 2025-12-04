@@ -2,21 +2,19 @@
 
 import {
   Box,
+  Button,
   Container,
   Flex,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
-import ImportMap from "@/components/ImportMap";
+// import ImportMap from "@/components/ImportMap";
 import Header from "@/components/Header";
-import RealtimeUserMap from "@/components/MapTrackingUser";
-import { useEffect, useState } from "react";
 
-import { Html5QrcodeScanner } from 'html5-qrcode'
+import { playSound } from "@/utils/sound";
 
 const MapVietnamTileset = dynamic(() => import("@/components/MapVietNam"));
 
 export default function Page() {
-  const [data, setData] = useState('No result');
   // useEffect(() => {
   //   const scanner = new Html5QrcodeScanner('render', {
   //     qrbox: {
@@ -43,12 +41,13 @@ export default function Page() {
       <Box as="main" mt={20}>
         <Flex direction={'column'}>
           <Box position="relative" w="100%" h="360px">
-           
+
+          <Button onClick={() => { playSound('/sound/success-scan.mp3') }}> sound </Button>
 
           </Box>
           {/* Bản đồ */}
           <Container>
-            <MapVietnamTileset />
+            {/* <MapVietnamTileset /> */}
             {/* <RealtimeUserMap /> */}
           </Container>
 
