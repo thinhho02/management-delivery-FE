@@ -19,7 +19,7 @@ const RootLayoutPostOffice = ({
                         <AsidePost />
                         <Box w={'full'}
                             pr={8}
-                            pl={{ base: "0", md: "332px" }}
+                            pl={{ base: 8, md: "332px" }}
                             mt={{ base: "2.5rem", md: "0" }}>
                             {children}
                         </Box>

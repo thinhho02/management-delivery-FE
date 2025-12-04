@@ -4,7 +4,7 @@ import MainPage from './_components/MainPage'
 
 const PageDashBoardPost = () => {
   return (
-    <Box w={'full'} mt={5} pr={{ base: "40px", md: 0 }}>
+    <Box w={'full'} mt={5}>
       <Heading size={'2xl'} fontWeight={'bold'}>
         Quản lý đơn hàng
       </Heading>

@@ -29,23 +29,31 @@ const ScanDialog = ({
     const [open, setOpen] = useState(false);
     const [loadingScan, setLoadingScan] = useState(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
+    const processingRef = useRef(false);
     const containerId = "qr-reader-container";
 
-    const startScanner = () => {
+    const startScanner = async () => {
         if (scannerRef.current) return;
 
         const scanner = new Html5Qrcode(containerId);
 
         scannerRef.current = scanner;
+        processingRef.current = false;
 
-        scannerRef.current.start({ facingMode: "environment" }, {
+        await scannerRef.current.start({ facingMode: "environment" }, {
             fps: 10,
             qrbox: { width: 250, height: 250 },
 
         },
             async (result: string) => {
+                // ⛔ CHẶN ĐANG SCAN LẦN TRƯỚC CHƯA XONG
+                if (processingRef.current) return;
+                processingRef.current = true;
+
                 console.log("QR Scanned:", result);
                 await handleScan(result);
+
+                processingRef.current = false;
             },
             (err: any) => {
                 console.log("QR error:", err);
@@ -88,6 +96,7 @@ const ScanDialog = ({
 
         if (res.success) {
             toaster.success({
+                id: "success-scan",
                 title: "Thành công",
                 description: res.result.message,
             });
@@ -110,10 +119,10 @@ const ScanDialog = ({
                 },
                 false
             );
-            playSound('/public/images/success-scan.mp3')
+            playSound('/public/sound/success-scan.mp3')
         } else {
-            toaster.error({ title: "Lỗi", description: res.error });
-            playSound('/public/images/error-scan.mp3')
+            toaster.error({ id: "error-scan", title: "Lỗi", description: res.error });
+            playSound('/public/sound/error-scan.mp3')
         }
 
         setLoadingScan(false);
