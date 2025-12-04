@@ -116,10 +116,9 @@ const OrderTableBusiness = () => {
     const handlePrintBulk = (selectedOrders: any[], canPrint: boolean) => {
         if (!canPrint) return;
         startTransition(async () => {
-            const newWindow = window.open("", "_blank");
             const ids = selectedOrders.map((o) => o._id);
             const res = await create<any>(`/order/print-bulk`, { orderIds: ids, size: "A6" }, { responseType: 'blob' })
-
+            
             if (!res.success) {
                 console.log(res.error)
                 toaster.error({
@@ -129,9 +128,10 @@ const OrderTableBusiness = () => {
                 })
                 return;
             }
-
+            
             const url = URL.createObjectURL(res.result);
-
+            
+            const newWindow = window.open("", "_blank");
             if (newWindow) newWindow.location.href = url;
 
             // 👉 Refresh lại bảng để update trạng thái printed
