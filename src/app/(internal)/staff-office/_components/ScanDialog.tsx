@@ -15,6 +15,7 @@ import { KeyedMutator } from "swr";
 import { IPickupOrderResponse } from "../_hooks/usePickupOrder";
 import { toaster } from "@/components/ui/toaster";
 import { Html5Qrcode } from "html5-qrcode";
+import { playSound } from "@/utils/sound";
 
 const ScanDialog = ({
     officeId,
@@ -37,14 +38,14 @@ const ScanDialog = ({
 
         scannerRef.current = scanner;
 
-        scanner.start({ facingMode: "environment"  }, {
+        scannerRef.current.start({ facingMode: "environment" }, {
             fps: 10,
             qrbox: { width: 250, height: 250 },
 
         },
             async (result: string) => {
                 console.log("QR Scanned:", result);
-                // await handleScan(result);
+                await handleScan(result);
             },
             (err: any) => {
                 console.log("QR error:", err);
@@ -52,23 +53,23 @@ const ScanDialog = ({
         );
     };
 
-    const stopScanner = () => {
-        if (scannerRef.current) {
-            scannerRef.current.clear();
-            scannerRef.current = null;
-        }
-    };
-
     useEffect(() => {
-        if (open) {
-            startScanner()
-
-        }
-        else stopScanner();
         setTimeout(() => {
-        }, 2000)
+            if (open) {
+                startScanner()
+            }
+        }, 1000)
 
-        return () => stopScanner();
+        return () => {
+            const stop = async () => {
+                if (scannerRef.current) {
+                    await scannerRef.current.stop()
+                    scannerRef.current.clear();
+                    scannerRef.current = null;
+                }
+            }
+            stop()
+        };;
     }, [open]);
 
     const handleScan = async (trackingCode: string) => {
@@ -109,8 +110,10 @@ const ScanDialog = ({
                 },
                 false
             );
+            playSound('/public/images/success-scan.mp3')
         } else {
             toaster.error({ title: "Lỗi", description: res.error });
+            playSound('/public/images/error-scan.mp3')
         }
 
         setLoadingScan(false);
