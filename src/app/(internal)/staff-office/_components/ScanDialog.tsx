@@ -131,7 +131,7 @@ const ScanDialog = ({
     return (
         <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
             <Dialog.Trigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" size={'sm'}>
                     <LuScanQrCode />
                     {type === "arrival" ? "Quét mã nhập Kho" : "Quét mã xuất Kho"}
                 </Button>

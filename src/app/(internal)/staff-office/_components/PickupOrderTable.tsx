@@ -207,14 +207,14 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
             ============================================= */}
             <HStack mb={4} justify={'space-between'} flexWrap={'wrap'}>
                 {/* status */}
-                <HStack gap={5}>
+                <HStack gap={5} w={'md'}>
                     <Select.Root
                         value={valueStatus}
                         onValueChange={(e) => {
                             setValueStatus(e.value);
                             setPage(1);
                         }}
-                        w="200px"
+                        size={'sm'}
                         collection={statusOptions}
                     >
                         <Select.HiddenSelect />
@@ -248,8 +248,8 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
                             setValuePick(e.value);
                             setPage(1);
                         }}
-                        w="200px"
                         collection={pickOptions}
+                        size={'sm'}
                     >
                         <Select.HiddenSelect />
                         <Select.Control>
@@ -275,7 +275,7 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
                         </Portal>
                     </Select.Root>
                 </HStack>
-                <HStack gap={5}>
+                <HStack gap={5} w={'md'} justify={'end'}>
                     <ScanDialog mutate={mutate} type="arrival" officeId={postId} />
                     <ScanDialog mutate={mutate} type="departure" officeId={postId} />
 
