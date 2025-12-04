@@ -11,11 +11,10 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { LuScanQrCode } from "react-icons/lu";
-import { QrReader } from "react-qr-reader";
 import { KeyedMutator } from "swr";
 import { IPickupOrderResponse } from "../_hooks/usePickupOrder";
 import { toaster } from "@/components/ui/toaster";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 
 const ScanDialog = ({
     officeId,
@@ -28,29 +27,24 @@ const ScanDialog = ({
 }) => {
     const [open, setOpen] = useState(false);
     const [loadingScan, setLoadingScan] = useState(false);
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
     const containerId = "qr-reader-container";
 
     const startScanner = () => {
         if (scannerRef.current) return;
 
-        const scanner = new Html5QrcodeScanner(
-            containerId,
-            {
-                fps: 5,
-                qrbox: { width: 250, height: 250 },
-                rememberLastUsedCamera: true,
-
-            },
-            false
-        );
+        const scanner = new Html5Qrcode(containerId);
 
         scannerRef.current = scanner;
 
-        scanner.render(
+        scanner.start({ facingMode: "environment"  }, {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+
+        },
             async (result: string) => {
                 console.log("QR Scanned:", result);
-                await handleScan(result);
+                // await handleScan(result);
             },
             (err: any) => {
                 console.log("QR error:", err);
@@ -66,13 +60,13 @@ const ScanDialog = ({
     };
 
     useEffect(() => {
-        setTimeout(() => {
-            if (open) {
+        if (open) {
+            startScanner()
 
-                startScanner()
-            }
-            else stopScanner();
-        }, 500)
+        }
+        else stopScanner();
+        setTimeout(() => {
+        }, 2000)
 
         return () => stopScanner();
     }, [open]);
@@ -142,7 +136,7 @@ const ScanDialog = ({
                         </Dialog.Header>
 
                         <Dialog.Body>
-                            <Box id={containerId} w="100%" minH="400px" />
+                            <Box id={containerId} w="100%" minH="400px" border={'none'} />
 
                             {loadingScan && (
                                 <Spinner

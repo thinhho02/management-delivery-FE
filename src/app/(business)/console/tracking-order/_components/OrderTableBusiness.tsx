@@ -104,7 +104,7 @@ const OrderTableBusiness = () => {
         [selected, toggleOne]
     );
     const tableData = useMemo(() => data ?? [], [data]);
-    
+
     const table = useReactTable({
         data: tableData,
         columns,
@@ -127,13 +127,14 @@ const OrderTableBusiness = () => {
                 })
                 return;
             }
-            // const myBlob = new Blob([res.result]);
-            // console.log(myBlob)
-            // Nhận PDF dạng blob
-            const url = URL.createObjectURL(res.result);
 
-            // 👉 Mở tab mới để xem/in PDF
-            window.open(url, "_blank");
+            const url = URL.createObjectURL(res.result);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'demo.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+            // window.open(url, "_blank");
 
             // 👉 Refresh lại bảng để update trạng thái printed
             mutate();
@@ -366,7 +367,7 @@ const OrderTableBusiness = () => {
                                 NÚT PRINT PDF (A6/A5)
                             =========================== */}
                             {(() => {
-                                if(!data) return;
+                                if (!data) return;
                                 const selectedOrders: any[] = data.filter((o: any) => selected[o._id]);
 
                                 // ❌ Nếu có đơn đã in → không được in lại
@@ -397,7 +398,7 @@ const OrderTableBusiness = () => {
                             })()}
 
                             {(() => {
-                                if(!data) return;
+                                if (!data) return;
 
                                 const selectedOrders = data.filter((o: any) => selected[o._id]);
                                 const canCancel = selectedOrders.every((o: any) => o.status === "pending");
