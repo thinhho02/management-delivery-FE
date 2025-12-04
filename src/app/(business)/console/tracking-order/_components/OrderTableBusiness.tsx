@@ -120,6 +120,7 @@ const OrderTableBusiness = () => {
             const res = await create<any>(`/order/print-bulk`, { orderIds: ids, size: "A6" }, { responseType: 'blob' })
 
             if (!res.success) {
+                console.log(res.error)
                 toaster.error({
                     id: `Error-Print-${Date.now}`,
                     title: "In thất bại",
@@ -129,12 +130,8 @@ const OrderTableBusiness = () => {
             }
 
             const url = URL.createObjectURL(res.result);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'demo.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
-            // window.open(url, "_blank");
+           
+            window.open(url, "_blank");
 
             // 👉 Refresh lại bảng để update trạng thái printed
             mutate();
