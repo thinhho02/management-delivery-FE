@@ -74,13 +74,13 @@ const TimelineShipment = ({ order }: { order: ResponseDetailOrder }) => {
 
                             {/* Địa chỉ bưu cục */}
                             <Timeline.Description fontSize="xs">
-                                {ev.officeId?.name || ""}
+                                {ev.officeName || ""}
                             </Timeline.Description>
 
                             {/* Note nếu có */}
-                            {ev.note && (
+                            {ev.eventNote && (
                                 <Text textStyle="sm" color="orange.600">
-                                    {ev.note}
+                                    {ev.eventNote}
                                 </Text>
                             )}
                         </Timeline.Content>

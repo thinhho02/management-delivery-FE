@@ -17,10 +17,13 @@ export interface IOrderPerson {
 
 export interface IOrderEvent {
   eventType: ShipmentEventType;      // tên sự kiện: "Đã tạo đơn", "Đã nhận hàng", ...
-  note: string;
+  eventNote: string;
   timestamp: Date | string;
   officeId: IOrderOffice | null;  // tên bưu cục
-  officeAddress: string | null;
+  officeName: string,
+  officeAddress: string,
+  officeLocation: string,
+  proofImages: string[]
 }
 
 export interface IShipmentDetail {
