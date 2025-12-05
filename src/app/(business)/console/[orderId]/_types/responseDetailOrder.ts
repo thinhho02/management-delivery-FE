@@ -19,10 +19,13 @@ export interface IOrderEvent {
   eventType: ShipmentEventType;      // tên sự kiện: "Đã tạo đơn", "Đã nhận hàng", ...
   eventNote: string;
   timestamp: Date | string;
-  officeId: IOrderOffice | null;  // tên bưu cục
-  officeName: string,
-  officeAddress: string,
-  officeLocation: string,
+  officeId?: string;  // tên bưu cục
+  officeName?: string,
+  officeAddress?: string,
+  officeLocation?: string,
+  shipperId?: string,
+  shipperName?: string,
+  shipperNumberPhone?: string,
   proofImages: string[]
 }
 
