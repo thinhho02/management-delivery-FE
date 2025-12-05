@@ -1,13 +1,15 @@
 'use client'
 
-import { Tabs } from '@chakra-ui/react'
+import { Box, Center, Spinner, Tabs } from '@chakra-ui/react'
 import React from 'react'
 import PickupOrderTable from './PickupOrderTable'
+import { usePostInfo } from '../_providers/PostInfoProvider'
 
 const MainPage = () => {
+    const { data: postInfo, isLoading } = usePostInfo()
     return (
         <Tabs.Root
-            defaultValue="pick"
+            defaultValue="inbound"
             variant="plain"
             css={{
                 "--tabs-indicator-bg": "colors.gray.subtle",
@@ -16,16 +18,28 @@ const MainPage = () => {
             }}
         >
             <Tabs.List>
-                <Tabs.Trigger value="pick">Đơn hàng nhận</Tabs.Trigger>
-                <Tabs.Trigger value="delivery">Đơn hàng giao</Tabs.Trigger>
+                <Tabs.Trigger value="inbound">Đơn hàng nhận</Tabs.Trigger>
+                <Tabs.Trigger value="outbound">Đơn hàng giao</Tabs.Trigger>
                 <Tabs.Indicator />
             </Tabs.List>
-            <Tabs.Content value="pick">
-                <PickupOrderTable typeOffice='pickup-office' />
-            </Tabs.Content>
-            <Tabs.Content value="delivery">
-                <PickupOrderTable typeOffice='delivery-office' />
-            </Tabs.Content>
+            {isLoading ?
+                (
+                    <Box mt={10}>
+                        <Center>
+                            <Spinner size={'sm'} />
+                        </Center>
+                    </Box>
+                ) :
+                (
+                    <>
+                        <Tabs.Content value="inbound">
+                            <PickupOrderTable typeOffice='inbound' postInfo={postInfo} />
+                        </Tabs.Content>
+                        <Tabs.Content value="outbound">
+                            <PickupOrderTable typeOffice='outbound' postInfo={postInfo} />
+                        </Tabs.Content>
+                    </>
+                )}
         </Tabs.Root>
     )
 }

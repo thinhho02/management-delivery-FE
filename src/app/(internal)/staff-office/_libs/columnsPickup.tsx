@@ -121,6 +121,7 @@ export const PickupColumns = (
                                     p={3}
                                     shadow="md"
                                     overflowY="auto"
+                                    width={{ base: '100%', md: '1000px' }}
                                 >
                                     <TimelineRouteFull order={order} />
                                 </Box>

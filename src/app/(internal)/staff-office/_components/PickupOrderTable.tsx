@@ -33,6 +33,7 @@ import { PickupColumns } from "../_libs/columnsPickup";
 import { usePickupOrders } from "../_hooks/usePickupOrder";
 import ScanDialog from "./ScanDialog";
 import { DeliveryColumns } from "../_libs/columnsDelivery";
+import { IPostOffice } from "../_providers/PostInfoProvider";
 
 
 // ================================
@@ -61,9 +62,9 @@ const pickOptions = createListCollection({
     ],
 });
 
-export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-office" | "delivery-office" }) {
+export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice: "inbound" | "outbound", postInfo: IPostOffice }) {
     const [page, setPage] = useState(1);
-    const [valueStatus, setValueStatus] = useState<string[]>(["created"]);
+    const [valueStatus, setValueStatus] = useState<string[]>([""]);
     const [valuePick, setValuePick] = useState<string[]>([""]);
 
     const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -80,6 +81,7 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
         page,
         status: valueStatus[0],
         pick: valuePick[0],
+        postInfo
     });
 
     // Reset checkbox khi thay đổi filter
@@ -96,9 +98,9 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
 
     const columns = useMemo(
         () => {
-            if(typeOffice === "pickup-office"){
+            if (typeOffice === "inbound") {
                 return PickupColumns(selected, toggleOne)
-            }else{
+            } else {
                 return DeliveryColumns(selected, toggleOne)
             }
         },
@@ -212,76 +214,78 @@ export default function PickupOrderTable({ typeOffice }: { typeOffice: "pickup-o
             {/* ============================================
                 FILTER BAR
             ============================================= */}
-            <HStack mb={4} justify={'space-between'} flexWrap={'wrap'}>
+            <HStack mb={4} justify={postInfo.type === "delivery_office" ? 'space-between' : "end"} flexWrap={'wrap'}>
                 {/* status */}
-                <HStack gap={5} w={'md'}>
-                    <Select.Root
-                        value={valueStatus}
-                        onValueChange={(e) => {
-                            setValueStatus(e.value);
-                            setPage(1);
-                        }}
-                        size={'sm'}
-                        collection={statusOptions}
-                    >
-                        <Select.HiddenSelect />
-                        <Select.Control>
-                            <Select.Trigger>
-                                <Select.ValueText placeholder="Trạng thái đơn" />
-                            </Select.Trigger>
-                            <Select.IndicatorGroup>
-                                <Select.Indicator />
-                            </Select.IndicatorGroup>
-                        </Select.Control>
+                {postInfo.type === "delivery_office" && (
+                    <HStack gap={5} w={'md'}>
+                        <Select.Root
+                            value={valueStatus}
+                            onValueChange={(e) => {
+                                setValueStatus(e.value);
+                                setPage(1);
+                            }}
+                            size={'sm'}
+                            collection={statusOptions}
+                        >
+                            <Select.HiddenSelect />
+                            <Select.Control>
+                                <Select.Trigger>
+                                    <Select.ValueText placeholder="Trạng thái đơn" />
+                                </Select.Trigger>
+                                <Select.IndicatorGroup>
+                                    <Select.Indicator />
+                                </Select.IndicatorGroup>
+                            </Select.Control>
 
-                        <Portal>
-                            <Select.Positioner>
-                                <Select.Content>
-                                    {statusOptions.items.map((s) => (
-                                        <Select.Item key={s.value} item={s}>
-                                            {s.label}
-                                            <Select.ItemIndicator />
-                                        </Select.Item>
-                                    ))}
-                                </Select.Content>
-                            </Select.Positioner>
-                        </Portal>
-                    </Select.Root>
+                            <Portal>
+                                <Select.Positioner>
+                                    <Select.Content>
+                                        {statusOptions.items.map((s) => (
+                                            <Select.Item key={s.value} item={s}>
+                                                {s.label}
+                                                <Select.ItemIndicator />
+                                            </Select.Item>
+                                        ))}
+                                    </Select.Content>
+                                </Select.Positioner>
+                            </Portal>
+                        </Select.Root>
 
-                    {/* pick option */}
-                    <Select.Root
-                        value={valuePick}
-                        onValueChange={(e) => {
-                            setValuePick(e.value);
-                            setPage(1);
-                        }}
-                        collection={pickOptions}
-                        size={'sm'}
-                    >
-                        <Select.HiddenSelect />
-                        <Select.Control>
-                            <Select.Trigger>
-                                <Select.ValueText placeholder="Hình thức lấy hàng" />
-                            </Select.Trigger>
-                            <Select.IndicatorGroup>
-                                <Select.Indicator />
-                            </Select.IndicatorGroup>
-                        </Select.Control>
+                        {/* pick option */}
+                        <Select.Root
+                            value={valuePick}
+                            onValueChange={(e) => {
+                                setValuePick(e.value);
+                                setPage(1);
+                            }}
+                            collection={pickOptions}
+                            size={'sm'}
+                        >
+                            <Select.HiddenSelect />
+                            <Select.Control>
+                                <Select.Trigger>
+                                    <Select.ValueText placeholder="Hình thức lấy hàng" />
+                                </Select.Trigger>
+                                <Select.IndicatorGroup>
+                                    <Select.Indicator />
+                                </Select.IndicatorGroup>
+                            </Select.Control>
 
-                        <Portal>
-                            <Select.Positioner>
-                                <Select.Content>
-                                    {pickOptions.items.map((s) => (
-                                        <Select.Item key={s.value} item={s}>
-                                            {s.label}
-                                            <Select.ItemIndicator />
-                                        </Select.Item>
-                                    ))}
-                                </Select.Content>
-                            </Select.Positioner>
-                        </Portal>
-                    </Select.Root>
-                </HStack>
+                            <Portal>
+                                <Select.Positioner>
+                                    <Select.Content>
+                                        {pickOptions.items.map((s) => (
+                                            <Select.Item key={s.value} item={s}>
+                                                {s.label}
+                                                <Select.ItemIndicator />
+                                            </Select.Item>
+                                        ))}
+                                    </Select.Content>
+                                </Select.Positioner>
+                            </Portal>
+                        </Select.Root>
+                    </HStack>
+                )}
                 <HStack gap={5} w={'md'} justify={'end'}>
                     <ScanDialog mutate={mutate} type="arrival" officeId={postId} />
                     <ScanDialog mutate={mutate} type="departure" officeId={postId} />

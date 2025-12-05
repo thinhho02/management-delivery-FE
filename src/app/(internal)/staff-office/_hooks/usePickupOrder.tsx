@@ -81,14 +81,15 @@ export const usePickupOrders = ({
     page,
     status,
     pick,
+    postInfo
 }: {
-    typeOffice: "pickup-office" | "delivery-office"
+    typeOffice: "inbound" | "outbound"
     page: number;
     status: string;
     pick: string;
+    postInfo: IPostOffice
 }) => {
-    const { data: postInfo } = usePostInfo()
-    const query = !postInfo._id ? null : `/order/${typeOffice}/${postInfo._id}?status=${status}&pick=${pick}&page=${page}`;
+    const query = !postInfo._id ? null : `/order/${postInfo.type}/${postInfo._id}/${typeOffice}?status=${status}&pick=${pick}&page=${page}`;
 
     const { data, error, isLoading, isValidating, mutate } = useSWR(
         query,

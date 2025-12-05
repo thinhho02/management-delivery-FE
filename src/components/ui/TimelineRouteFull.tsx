@@ -103,15 +103,22 @@ export default function TimelineRouteFull({
 
   return (
     <Grid
-      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-
+      // grid-template-rows: repeat(auto-fit, minmax(330px, 1fr));
+      gridTemplateColumns={{
+        base: "repeat(auto-fit, minmax(320px, 1fr))",
+        md: "repeat(auto-fit, minmax(420px, 1fr))"
+      }}
+      gap={{
+        base: "60px",
+        md: 0
+      }}
       p={4}
       w={'full'}
-      divideX={'1px'}>
+      divideX={'1px'} >
       {/* ========================== */}
       {/*       ROUTE PLAN LEFT      */}
       {/* ========================== */}
-      <GridItem>
+      <GridItem pr={{ base: 0, md: 10 }}>
         <Text fontSize="lg" fontWeight="bold" mb={3}>
           HÀNH TRÌNH DỰ KIẾN
         </Text>
@@ -159,7 +166,7 @@ export default function TimelineRouteFull({
       {/* ========================== */}
       {/*     SHIPMENT EVENTS RIGHT  */}
       {/* ========================== */}
-      <GridItem pl={10}>
+      <GridItem pl={{ base: 0, md: 10 }}>
         <Text fontSize="lg" fontWeight="bold" mb={3}>
           HÀNH TRÌNH THỰC TẾ
         </Text>
@@ -209,7 +216,7 @@ export default function TimelineRouteFull({
           })}
         </Timeline.Root>
       </GridItem>
-    </Grid>
+    </Grid >
   );
 }
 

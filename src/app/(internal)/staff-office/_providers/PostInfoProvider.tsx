@@ -25,7 +25,7 @@ export interface IPostOffice {
     _id: string;
     name: string;
     code: string;
-    type: "sorting_center" | "distribution_hub" | "delivery_office";
+    type: "sorting_center" | "distribution_hub" | "delivery_office" | null;
     address: string;
     status: boolean;
     regionId?: IZoneInfo | null;
@@ -38,7 +38,7 @@ const PostOfficePending: IPostOffice = {
     _id: "",
     name: "Đang tải bưu cục...",
     code: "",
-    type: "delivery_office",
+    type: null,
     address: "",
     status: false,
     regionId: null,
