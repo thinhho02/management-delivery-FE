@@ -406,7 +406,7 @@ const OrderTableBusiness = () => {
                                         content={
                                             canCancel
                                                 ? "Hủy các đơn hàng đã chọn"
-                                                : "Chỉ được hủy đơn khi tất cả đơn đều ở trạng thái Pending"
+                                                : "Chỉ được hủy đơn khi tất cả đơn đều ở trạng thái đang xử lý"
                                         }
                                     >
                                         <Button
