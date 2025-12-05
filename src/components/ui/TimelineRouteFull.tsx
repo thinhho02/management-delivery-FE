@@ -102,7 +102,12 @@ export default function TimelineRouteFull({
   );
 
   return (
-    <Grid templateColumns="1fr 1fr" p={4} w={'full'} divideX={'1px'}>
+    <Grid
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+
+      p={4}
+      w={'full'}
+      divideX={'1px'}>
       {/* ========================== */}
       {/*       ROUTE PLAN LEFT      */}
       {/* ========================== */}

@@ -6,7 +6,6 @@ import { IPostOffice, usePostInfo } from "../_providers/PostInfoProvider";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { OrderStatus } from "@/app/(business)/console/tracking-order/_hooks/useBusinessOrders";
-import { IOrderEvent } from "@/app/(business)/console/[orderId]/_types/responseDetailOrder";
 
 
 export type PickupStatus =
@@ -33,6 +32,14 @@ export interface IRouteStep {
     to: IPostOffice;
     type: "pickup" | "hub" | "sorting" | "delivery";  // step loại BC
     order: number;                                      // thứ tự step
+}
+interface IOrderEvent {
+    eventType: PickupStatus;
+    note: string;
+    officeId: IPostOffice | null;
+    shipperDetailId: any;
+    proofImages: string[];
+    timestamp: Date
 }
 
 export interface IPickupOrder {
