@@ -16,7 +16,7 @@ const BusinessAuthLayout = ({
         <CheckSessionBusinessProvider>
             <LayoutUser>
                 <Box w={'full'} h={'full'} mx={'auto'} bgImage={`url(${backgroundImage.src})`} bgPos={'center center'} bgRepeat={'no-repeat'} bgSize={'fill'} bgColor={'black'}>
-                    <Box py={20}>
+                    <Box pt={20}>
                         {children}
                     </Box>
                 </Box>

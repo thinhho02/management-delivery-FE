@@ -183,7 +183,7 @@ const RegisterForm = () => {
           Đăng ký
         </Heading>
         <Text fontWeight={'500'} mt={2}>
-          Bạn đã có tài khoản {'{ten doanh nghiệp}'} For Business? <LinkCustom href={'/business/login'} color={'blue'} _hover={{ color: 'blue.500' }}>Đăng nhập</LinkCustom>
+          Bạn đã có tài khoản t&k express dành cho doanh nghiệp? <LinkCustom href={'/business/login'} color={'blue'} _hover={{ color: 'blue.500' }}>Đăng nhập</LinkCustom>
         </Text>
         <form onSubmit={submitForm}>
           <Fieldset.Root mt={5}>

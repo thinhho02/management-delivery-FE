@@ -58,7 +58,7 @@ const statusOptions = createListCollection({
 const pickOptions = createListCollection({
     items: [
         { label: "Shipper lấy hàng", value: "pick_home" },
-        { label: "Gửi tại bưu cục", value: "printed" },
+        { label: "Gửi tại bưu cục", value: "pick_post" },
     ],
 });
 
@@ -104,7 +104,7 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
                 return DeliveryColumns(selected, toggleOne)
             }
         },
-        [selected, toggleOne]
+        [selected, toggleOne, typeOffice]
     );
 
     const tableData = useMemo(() => data ?? [], [data]);
@@ -287,8 +287,8 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
                     </HStack>
                 )}
                 <HStack gap={5} w={'md'} justify={'end'}>
-                    <ScanDialog mutate={mutate} type="arrival" officeId={postId} />
-                    <ScanDialog mutate={mutate} type="departure" officeId={postId} />
+                    {typeOffice === "inbound" && <ScanDialog mutate={mutate} type="arrival" officeId={postId} />}
+                    {typeOffice === "outbound" && <ScanDialog mutate={mutate} type="departure" officeId={postId} />}
 
                 </HStack>
             </HStack>
@@ -426,11 +426,11 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
                                 const selectedOrders = data.filter(o => selected[o._id]);
 
                                 const canArrange = selectedOrders.length > 0 &&
-                                    selectedOrders.every(o => o.status === "pending");
+                                    selectedOrders.every(o => o.status === "pending") && selectedOrders.every(o => o.pick === "pick_home")
 
                                 const arrangeTooltip = canArrange
                                     ? "Sắp xếp vận chuyển cho các đơn hàng đã chọn"
-                                    : "Không thể sắp xếp vì có đơn hàng không ở trạng thái 'Đang xử lý'";
+                                    : "Không thể sắp xếp vì có đơn hàng không ở trạng thái 'Đang xử lý' hoặc hình thức lấy hàng không phải shipper lấy";
 
                                 return (
                                     <Tooltip content={arrangeTooltip}>

@@ -23,7 +23,7 @@ const FormInfoOrder = memo(() => {
         <Box py={4} px={4} rounded={'lg'} bgColor={'bg.muted'} w={'full'}>
             <Stack gap={5}>
                 <Heading size={'lg'} fontWeight={'bold'}>
-                    Thông tin vận chuyên
+                    Thông tin vận chuyển
                 </Heading>
                 <Controller
                     control={control}

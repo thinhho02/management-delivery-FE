@@ -7,8 +7,11 @@ import { usePostInfo } from '../_providers/PostInfoProvider'
 
 const MainPage = () => {
     const { data: postInfo, isLoading } = usePostInfo()
+
     return (
         <Tabs.Root
+            lazyMount 
+            unmountOnExit
             defaultValue="inbound"
             variant="plain"
             css={{
