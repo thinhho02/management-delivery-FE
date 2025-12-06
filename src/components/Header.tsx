@@ -14,7 +14,6 @@ import {
 import NextImage from "next/image";
 import { useState } from "react";
 import { FiSidebar } from 'react-icons/fi';
-import logoIcon from '/public/logo.svg'
 import { ColorModeButton } from "./ui/color-mode";
 import LinkCustom from "./ui/LinkCustom";
 
@@ -58,7 +57,7 @@ export default function Header() {
                 <HStack wordSpacing="2">
                     <LinkCustom href={'/'}>
                         <Image asChild>
-                            <NextImage src={logoIcon} alt="adsa" />
+                            <NextImage src={'/logo/logo.svg'} alt="adsa" width={65} height={65} />
                         </Image>
                     </LinkCustom>
                 </HStack>

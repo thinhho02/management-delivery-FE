@@ -15,7 +15,7 @@ import dynamic from 'next/dynamic'
 import { toaster } from '@/components/ui/toaster'
 import { ResponsePost } from './MainDetailPost'
 
-const DetailPostMap = dynamic(() => import('./DetailPostMap'), { ssr: false });
+const DetailPostMap = dynamic(() => import('./DetailPostMap'));
 
 
 const types = createListCollection({

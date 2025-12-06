@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic';
 import { ResponseTileSet } from '@/types/responseTileSet';
 // import { mergeProvincesToRegion } from '@/utils/mergeRegion';
 
-const AdminMap = dynamic(() => import('./AdminMap'), { ssr: false });
+const AdminMap = dynamic(() => import('./AdminMap'));
 
 
 const MainPageSourceLayer = ({ sourceLayer, getNameZone }: { sourceLayer: string, getNameZone: IZones }) => {

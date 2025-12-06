@@ -8,7 +8,7 @@ import { LuMapPin } from 'react-icons/lu'
 import { formatDateVN } from '@/utils/formatDateVN'
 import dynamic from 'next/dynamic'
 import TimelineShipment from '@/components/ui/TimeLineShipment'
-const InfoOrderMap = dynamic(() => import('./InfoOrderMap'), { ssr: false })
+const InfoOrderMap = dynamic(() => import('./InfoOrderMap'))
 
 interface Props {
     order: ResponseDetailOrder,

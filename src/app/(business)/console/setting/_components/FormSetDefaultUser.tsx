@@ -17,7 +17,7 @@ import { LuInfo, LuMapPinned } from 'react-icons/lu'
 import z from 'zod'
 import { IUserDefault } from '../../new-order/_hooks/useUserDefault'
 
-const LocationUserMap = dynamic(() => import('./LocationMapUser'), { ssr: false })
+const LocationUserMap = dynamic(() => import('./LocationMapUser'))
 
 
 const formSchema = z.object({
