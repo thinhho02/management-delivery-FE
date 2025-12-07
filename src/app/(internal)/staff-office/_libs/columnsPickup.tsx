@@ -14,14 +14,15 @@ import {
 } from "@chakra-ui/react";
 
 import { createColumnHelper } from "@tanstack/react-table";
-import { IPickupOrder, PickupStatus } from "../_hooks/usePickupOrder";
+import { IPickupOrder } from "../_hooks/usePickupOrder";
 import LinkCustom from "@/components/ui/LinkCustom";
 import { formatDateVN } from "@/utils/formatDateVN";
 import TimelineRouteFull from "@/components/ui/TimelineRouteFull";
 import { RiTimelineView } from "react-icons/ri";
 import { ToggleTip } from "@/components/ui/toggleTooltip";
+import { ShipmentEventType } from "@/components/ui/TimeLineShipment";
 
-export const getShipmentStatus = (status: PickupStatus) => {
+export const getShipmentStatus = (status: ShipmentEventType) => {
     switch (status) {
         case "created":
             return { label: "Đã tạo đơn", color: "gray" };
@@ -33,8 +34,10 @@ export const getShipmentStatus = (status: PickupStatus) => {
             return { label: "Đã nhập kho", color: "blue" };
         case "departure":
             return { label: "Đã xuất kho", color: "teal" };
+        case "waiting_delivery":
+            return { label: "Đang giao hàng", color: "cyan.600" }
         case "delivery_attempt":
-            return { label: "Đang giao hàng", color: "orange" };
+            return { label: "Giao thất bại", color: "yellow" };
         case "delivered":
             return { label: "Giao thành công", color: "green" };
         case "returned":

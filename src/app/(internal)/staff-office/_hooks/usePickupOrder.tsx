@@ -6,20 +6,9 @@ import { IPostOffice, usePostInfo } from "../_providers/PostInfoProvider";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { OrderStatus } from "@/app/(business)/console/tracking-order/_hooks/useBusinessOrders";
+import { ShipmentEventType } from "@/components/ui/TimeLineShipment";
 
 
-export type PickupStatus =
-    'created'
-    | 'waiting_pickup'
-    | 'pickup'
-    | 'arrival'
-    | 'departure'
-    | 'delivery_attempt'
-    | 'delivered'
-    | 'returned'
-    | 'cancelled'
-    | 'lost'
-    | 'damaged'
 
 export type PrintedFilter = "all" | "printed" | "not_printed";
 
@@ -34,7 +23,7 @@ export interface IRouteStep {
     order: number;                                      // thứ tự step
 }
 interface IOrderEvent {
-    eventType: PickupStatus;
+    eventType: ShipmentEventType;
     note: string;
     officeId: IPostOffice | null;
     shipperDetailId: any;
@@ -54,7 +43,7 @@ export interface IPickupOrder {
     weight: number;
     shipFee: number;
 
-    currentType: PickupStatus;
+    currentType: ShipmentEventType;
     routePlan: IRouteStep[],
     events: IOrderEvent[],
     pick: "pick_home" | "pick_post";

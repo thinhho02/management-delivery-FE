@@ -14,41 +14,14 @@ import {
 } from "@chakra-ui/react";
 
 import { createColumnHelper } from "@tanstack/react-table";
-import { IPickupOrder, PickupStatus } from "../_hooks/usePickupOrder";
+import { IPickupOrder } from "../_hooks/usePickupOrder";
 import LinkCustom from "@/components/ui/LinkCustom";
 import { formatDateVN } from "@/utils/formatDateVN";
 import TimelineRouteFull from "@/components/ui/TimelineRouteFull";
 import { RiTimelineView } from "react-icons/ri";
 import { ToggleTip } from "@/components/ui/toggleTooltip";
-
-export const getShipmentStatus = (status: PickupStatus) => {
-    switch (status) {
-        case "created":
-            return { label: "Đã tạo đơn", color: "gray" };
-        case "waiting_pickup":
-            return { label: "Chờ lấy hàng", color: "purple" };
-        case "pickup":
-            return { label: "Đã lấy hàng", color: "cyan" };
-        case "arrival":
-            return { label: "Đã nhập kho", color: "blue" };
-        case "departure":
-            return { label: "Đã xuất kho", color: "teal" };
-        case "delivery_attempt":
-            return { label: "Đang giao hàng", color: "orange" };
-        case "delivered":
-            return { label: "Giao thành công", color: "green" };
-        case "returned":
-            return { label: "Chuyển hoàn", color: "yellow" };
-        case "cancelled":
-            return { label: "Đã hủy", color: "red" };
-        case "lost":
-            return { label: "Thất lạc", color: "red" };
-        case "damaged":
-            return { label: "Hư hỏng", color: "red" };
-        default:
-            return { label: "Không xác định", color: "gray" };
-    }
-};
+import { ShipmentEventType } from "@/components/ui/TimeLineShipment";
+import { getShipmentStatus } from "./columnsPickup";
 
 const columnHelper = createColumnHelper<IPickupOrder>();
 

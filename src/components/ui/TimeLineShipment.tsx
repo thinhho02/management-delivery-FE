@@ -10,6 +10,7 @@ export type ShipmentEventType =
     | 'arrival'
     | 'departure'
     | 'delivery_attempt'
+    | 'waiting_delivery'
     | 'delivered'
     | 'returned'
     | 'cancelled'
@@ -26,6 +27,7 @@ export const EVENT_MAP: Record<
     pickup: { label: "Đã lấy hàng", icon: LuShip },
     arrival: { label: "Đến bưu cục", icon: LuPackage },
     departure: { label: "Rời bưu cục", icon: LuTruck },
+    waiting_delivery: { label: "Đang trên đường giao", icon: LuTruck },
     delivery_attempt: { label: "Giao hàng thất bại", icon: LuTriangleAlert },
     delivered: { label: "Đã giao hàng", icon: LuCheck },
     returned: { label: "Đang hoàn hàng", icon: LuRotateCcw },

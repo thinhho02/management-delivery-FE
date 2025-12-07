@@ -13,7 +13,9 @@ import {
     Portal,
     Button,
     createListCollection,
-    Select
+    Select,
+    useFilter,
+    Input
 } from "@chakra-ui/react";
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
@@ -46,7 +48,8 @@ const statusOptions = createListCollection({
         { label: "Đã lấy hàng", value: "pickup" },
         { label: "Đã nhập kho", value: "arrival" },
         { label: "Đã xuất kho", value: "departure" },
-        { label: "Đang giao hàng", value: "delivery_attempt" },
+        { label: "Đang giao hàng", value: "waiting_delivery" },
+        { label: "Giao thất bại", value: "delivery_attempt" },
         { label: "Giao thành công", value: "delivered" },
         { label: "Chuyển hoàn", value: "returned" },
         { label: "Đã hủy", value: "cancelled" },
@@ -68,11 +71,11 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
     const [valuePick, setValuePick] = useState<string[]>([""]);
 
     const [selected, setSelected] = useState<Record<string, boolean>>({});
-
+    const [searchText, setSearchText] = useState("");
     const [isPending, startTransitrion] = useTransition();
 
     const [sorting, setSorting] = useState<SortingState>([]);
-
+    const { contains } = useFilter({ sensitivity: "base" });
     // ================================
     // FETCH API
     // ================================
@@ -107,7 +110,17 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
         [selected, toggleOne, typeOffice]
     );
 
-    const tableData = useMemo(() => data ?? [], [data]);
+    const tableData = useMemo(() => {
+        if (!data) return [];
+        if (!searchText.trim()) return data;
+        const lower = searchText.toLowerCase();
+
+        return data.filter((item) => {
+            return (
+                contains(item.trackingCode ?? "", lower)
+            );
+        });
+    }, [data, searchText, contains]);
 
     const table = useReactTable({
         data: tableData,
@@ -292,6 +305,16 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
 
                 </HStack>
             </HStack>
+
+            <Box>
+                <Input
+                    placeholder="Nhập mã vận đơn"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    w="300px"
+                    mb={4}
+                />
+            </Box>
 
             {/* ============================================
                 TABLE
