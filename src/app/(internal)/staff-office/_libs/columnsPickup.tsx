@@ -212,7 +212,7 @@ export const PickupColumns = (
                 const receiverAddress = info.getValue() || "—"
                 return (
                     <Tooltip showArrow content={receiverAddress}>
-                        <Box maxW={'200px'}>
+                        <Box maxW={'200px'} display={'inline-block'}>
                             <Text truncate>
                                 {receiverAddress}
                             </Text>

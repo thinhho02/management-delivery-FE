@@ -55,7 +55,6 @@ export default function MapVietnamTileset() {
       });
     });
     geolocate.on("trackuserlocationstart", () => {
-      console.log("Tracking started")
       navigator.geolocation.getCurrentPosition(position => {
         const { longitude, latitude } = position.coords;
         userLocationRef.current = [longitude, latitude];
@@ -172,7 +171,6 @@ export default function MapVietnamTileset() {
       alert("Không tìm thấy đường đi!");
       return;
     }
-    console.log(data)
     const route = data.routes[0].geometry as LineString;
 
 

@@ -47,7 +47,6 @@ const LocationPostMap = memo(({ zoneId, valueType, lngLat, setLngLat, setValue }
         if (mapRef.current || !mapContainer.current) return;
 
         mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
-        console.log(process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!)
         const map = new mapboxgl.Map({
             container: mapContainer.current,
             style: "mapbox://styles/mapbox/streets-v12", // style sáng
@@ -79,7 +78,6 @@ const LocationPostMap = memo(({ zoneId, valueType, lngLat, setLngLat, setValue }
 
 
     useEffect(() => {
-        console.log(lngLat)
         if (!lngLat || !mapRef.current || !dataZone) return;
         const map = mapRef.current
         const coordinates: { longitude: number, latitude: number } = JSON.parse(lngLat)

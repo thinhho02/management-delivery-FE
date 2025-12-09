@@ -44,7 +44,6 @@ const PageMap = () => {
             })
         },
         onFileChange: (f) => {
-            console.log(f)
             if (f.acceptedFiles.length > 0) {
                 setValue('file', f.acceptedFiles)
             }
@@ -55,7 +54,6 @@ const PageMap = () => {
     // submit form
     const onSubmit = handleSubmit(async (data) => {
         const formData = new FormData()
-        console.log(data)
         formData.append("fileUpload", data.file[0])
         formData.append("zone", data.zone)
         const response = await create<{ jobId: string; tileset: string; message: string }>(`/mapbox/${data.zone}/import`, formData)
@@ -66,7 +64,6 @@ const PageMap = () => {
                 type: 'success',
             })
     
-            console.log("job success")
         } else {
             toaster.create({
                 id: `tileset-create-er-${Date.now()}`,

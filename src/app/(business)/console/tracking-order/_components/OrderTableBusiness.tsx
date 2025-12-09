@@ -14,7 +14,9 @@ import {
     Button,
     Dialog,
     createListCollection,
-    Select
+    Select,
+    useFilter,
+    Input
 } from "@chakra-ui/react";
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
@@ -27,11 +29,12 @@ import {
 
 import { LuChevronLeft, LuChevronRight, LuSquarePlus, LuTrash2 } from "react-icons/lu";
 
-import { useBusinessOrders } from "../_hooks/useBusinessOrders";
+import { IOrder, useBusinessOrders } from "../_hooks/useBusinessOrders";
 import { OrderColumns } from "../_libs/columnsOrder";
 import { Tooltip } from "@/components/ui/tooltip";
-import { create } from "@/apis/apiCore";
+import { create, update } from "@/apis/apiCore";
 import { toaster } from "@/components/ui/toaster";
+import { useSocketBusiness } from "@/app/(business)/_providers/SocketProviderBusiness";
 
 
 
@@ -69,23 +72,64 @@ const printedOptions = createListCollection({
     ],
 });
 
+const pickOptions = createListCollection({
+    items: [
+        { label: "Shipper lấy hàng", value: "pick_home" },
+        { label: "Gửi tại bưu cục", value: "pick_post" },
+    ],
+});
+
 
 const OrderTableBusiness = () => {
     const [page, setPage] = useState(1);
     const [isPending, startTransition] = useTransition();
     const [isPendingCancel, startTransitionCancel] = useTransition();
-    const [value, setValue] = useState<string[]>(["pending"])
+    const [isPendingTransport, startTransitionTransport] = useTransition();
+    const [valuePick, setValuePick] = useState<string[]>([]);
+
+    const [value, setValue] = useState<string[]>([])
     const [printed, setPrinted] = useState<string[]>(["all"])
+    const [searchText, setSearchText] = useState("");
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const [sorting, setSorting] = useState<SortingState>([]);
+    const { contains } = useFilter({ sensitivity: "base" });
+    const { socket, isConnected } = useSocketBusiness()
 
 
-    const { data, pagination, loading, mutate } = useBusinessOrders({ page, status: value[0], printed: printed[0] });
+    const { data, pagination, loading, mutate } = useBusinessOrders({ page, pick: valuePick[0], status: value[0], printed: printed[0] });
 
     // Clear selection khi filter / page thay đổi
     useEffect(() => {
         setSelected({});
     }, [value, printed, page]);
+
+    useEffect(() => {
+        if (!isConnected) return;
+        const updateOrder = (payload: IOrder) => {
+            mutate(prev => {
+                if (!prev?.success) return prev;
+
+                const updatedRows = prev.result.orders.map(o => {
+
+                    return o._id == payload._id ? { ...o, ...payload } : o;
+                });
+
+                return {
+                    ...prev,
+                    result: {
+                        ...prev.result,
+                        orders: updatedRows
+                    }
+                };
+            }, false);
+        }
+
+        socket.on("order:update", updateOrder)
+
+        return () => {
+            socket.off("order:update", updateOrder)
+        }
+    }, [isConnected])
 
     const toggleOne = useCallback((id: string, v: boolean) => {
         setSelected((cur) => ({ ...cur, [id]: v }));
@@ -98,12 +142,21 @@ const OrderTableBusiness = () => {
 
     const someSelected = selectedCount > 0;
 
-    console.log(data)
     const columns = useMemo(
         () => OrderColumns(selected, toggleOne),
         [selected, toggleOne]
     );
-    const tableData = useMemo(() => data ?? [], [data]);
+    const tableData = useMemo(() => {
+        if (!data) return [];
+        if (!searchText.trim()) return data;
+        const lower = searchText.toLowerCase();
+
+        return data.filter((item) => {
+            return (
+                contains(item.trackingCode ?? "", lower)
+            );
+        });
+    }, [data, searchText]);
 
     const table = useReactTable({
         data: tableData,
@@ -112,13 +165,50 @@ const OrderTableBusiness = () => {
         getCoreRowModel: getCoreRowModel(),
     });
 
+    const handleArrangeTransport = (selectedOrders: any[]) => {
+        startTransitionTransport(async () => {
+            const ids = selectedOrders.map((o) => o._id);
+
+            const res = await update<any>("/order/pickup-office/arrange-transport", { orderIds: ids });
+
+            if (!res.success) {
+                toaster.error({
+                    id: `Arrange-${Date.now()}`,
+                    title: "Sắp xếp vận chuyển thất bại",
+                    description: res.error
+                });
+                return;
+            }
+
+            const { arranged, failed } = res.result;
+            if (failed.length > 0) {
+                const reason = failed.map((f: any) => f.reason)
+                toaster.error({
+                    id: `Arrange-${Date.now()}`,
+                    title: "Sắp xếp vận chuyển thất bại",
+                    description: reason.join(", ")
+                });
+                return;
+            }
+
+            setSelected({});
+
+
+            toaster.success({
+                id: `Arrange-${Date.now()}`,
+                title: "Sắp xếp vận chuyển thành công"
+            });
+
+        });
+    };
+
 
     const handlePrintBulk = (selectedOrders: any[], canPrint: boolean) => {
         if (!canPrint) return;
         startTransition(async () => {
             const ids = selectedOrders.map((o) => o._id);
             const res = await create<any>(`/order/print-bulk`, { orderIds: ids, size: "A6" }, { responseType: 'blob' })
-            
+
             if (!res.success) {
                 console.log(res.error)
                 toaster.error({
@@ -128,9 +218,9 @@ const OrderTableBusiness = () => {
                 })
                 return;
             }
-            
+
             const url = URL.createObjectURL(res.result);
-            
+
             const newWindow = window.open("", "_blank");
             if (newWindow) newWindow.location.href = url;
 
@@ -186,23 +276,24 @@ const OrderTableBusiness = () => {
 
     return (
         <Box my={6}>
-            <HStack mb={4} gap={5}>
+            <HStack mb={4}>
                 <Select.Root
                     value={value}
                     onValueChange={(e) => {
-                        console.log(e.value)
                         setValue(e.value)
                         setPage(1); // reset page
                     }}
-                    w={'300px'}
+                    w={'250px'}
+                    size={'xs'}
                     collection={types}
                 >
                     <Select.HiddenSelect />
                     <Select.Control>
                         <Select.Trigger>
-                            <Select.ValueText placeholder="Chọn loại bưu cục" />
+                            <Select.ValueText placeholder="Chọn trạng thái đơn hàng" />
                         </Select.Trigger>
                         <Select.IndicatorGroup>
+                            <Select.ClearTrigger />
                             <Select.Indicator />
                         </Select.IndicatorGroup>
                     </Select.Control>
@@ -223,11 +314,11 @@ const OrderTableBusiness = () => {
                 <Select.Root
                     value={printed}
                     onValueChange={(e) => {
-                        console.log(e.value)
                         setPrinted(e.value)
                         setPage(1); // reset page
                     }}
-                    w={'150px'}
+                    w={'100px'}
+                    size={'xs'}
                     collection={printedOptions}
                 >
                     <Select.HiddenSelect />
@@ -236,6 +327,7 @@ const OrderTableBusiness = () => {
                             <Select.ValueText placeholder="Chọn trạng thái in" />
                         </Select.Trigger>
                         <Select.IndicatorGroup>
+                            <Select.ClearTrigger />
                             <Select.Indicator />
                         </Select.IndicatorGroup>
                     </Select.Control>
@@ -252,12 +344,56 @@ const OrderTableBusiness = () => {
                         </Select.Positioner>
                     </Portal>
                 </Select.Root>
+                {/* pick option */}
+                <Select.Root
+                    value={valuePick}
+                    onValueChange={(e) => {
+                        setValuePick(e.value);
+                        setPage(1);
+                    }}
+                    collection={pickOptions}
+                    w={'200px'}
+                    size={'xs'}
+                >
+                    <Select.HiddenSelect />
+                    <Select.Control>
+                        <Select.Trigger>
+                            <Select.ValueText placeholder="Hình thức lấy hàng" />
+                        </Select.Trigger>
+                        <Select.IndicatorGroup>
+                            <Select.ClearTrigger />
+                            <Select.Indicator />
+                        </Select.IndicatorGroup>
+                    </Select.Control>
+
+                    <Portal>
+                        <Select.Positioner>
+                            <Select.Content>
+                                {pickOptions.items.map((s) => (
+                                    <Select.Item key={s.value} item={s}>
+                                        {s.label}
+                                        <Select.ItemIndicator />
+                                    </Select.Item>
+                                ))}
+                            </Select.Content>
+                        </Select.Positioner>
+                    </Portal>
+                </Select.Root>
             </HStack>
+            <Box>
+                <Input
+                    placeholder="Nhập mã vận đơn"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    w="300px"
+                    mb={4}
+                />
+            </Box>
             <Table.ScrollArea borderWidth="1px">
                 <Table.Root
                     variant="outline"
                     size="sm"
-                    textStyle={'sm'}
+                    textStyle={'xs'}
                     native
                     interactive
                     css={{
@@ -360,6 +496,39 @@ const OrderTableBusiness = () => {
                             </ActionBar.SelectionTrigger>
 
                             <ActionBar.Separator />
+
+                            {/* ---- Sắp xếp vận chuyển ---- */}
+                            {(() => {
+                                if (!data) return null;
+
+                                const selectedOrders = data.filter(o => selected[o._id]);
+
+                                const canArrange = selectedOrders.length > 0 &&
+                                    selectedOrders.every(o => o.status === "pending") && selectedOrders.every(o => o.pick === "pick_home")
+
+                                const arrangeTooltip = canArrange
+                                    ? "Sắp xếp vận chuyển cho các đơn hàng đã chọn"
+                                    : "Không thể sắp xếp vì có đơn hàng không ở trạng thái 'Đang xử lý' hoặc hình thức lấy hàng không phải shipper lấy";
+
+                                return (
+                                    <Tooltip content={arrangeTooltip}>
+                                        <Button
+                                            size="sm"
+                                            variant="solid"
+                                            bgColor="blue.600"
+                                            _hover={{ bgColor: "blue.500" }}
+                                            loading={isPendingTransport}
+                                            disabled={!canArrange}
+                                            onClick={() => {
+                                                if (!canArrange) return;
+                                                handleArrangeTransport(selectedOrders);
+                                            }}
+                                        >
+                                            Sắp xếp vận chuyển
+                                        </Button>
+                                    </Tooltip>
+                                );
+                            })()}
 
                             {/* ==========================
                                 NÚT PRINT PDF (A6/A5)

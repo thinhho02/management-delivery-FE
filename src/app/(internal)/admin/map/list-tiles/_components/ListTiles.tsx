@@ -42,7 +42,6 @@ const ListTiles = () => {
         },
         onSuccess: (data) => {
             if (data.success) {
-                // console.log(data.result)
             } else {
                 toaster.create({
                     id: `list-tileset-${Date.now()}`,
@@ -50,7 +49,6 @@ const ListTiles = () => {
                     title: data.error || "Error loading tileset",
                 });
             }
-            console.log(data.success && data.result);
         },
         revalidateOnFocus: false,
     })
@@ -67,7 +65,6 @@ const ListTiles = () => {
                     height: 200,
                     width: 300,
                 });
-                console.log(url)
                 newImages[tile.id] = url;
             }
             setMapImages(newImages);

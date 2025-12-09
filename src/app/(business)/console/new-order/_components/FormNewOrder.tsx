@@ -114,10 +114,7 @@ const FormNewOrder = () => {
             isUserDefault: false
         }
     })
-    setTimeout(() => {
-        console.log("value get", formParent.getValues())
-
-    }, 300)
+    
     useEffect(() => {
         if (isLoading || !data.default) return;
         formParent.reset({
@@ -199,7 +196,6 @@ const FormNewOrder = () => {
         productWeight
     ]);
 
-    console.log(formParent.formState.errors)
     const submitForm = formParent.handleSubmit(async (dataForm) => {
         if (!dataForm.senderCheckEmail) {
             formParent.setError("senderEmail", { message: "Cần kiểm tra email trước khi tạo đơn hàng" })
@@ -248,7 +244,6 @@ const FormNewOrder = () => {
             receiverWardId: dataForm.receiverWardId,
             receiverLngLat: dataForm.receiverLngLat,
         }
-        console.log(dataForm)
         const res = await create<any>(`/order/create`, payload)
         if (!res.success) {
             toaster.error({

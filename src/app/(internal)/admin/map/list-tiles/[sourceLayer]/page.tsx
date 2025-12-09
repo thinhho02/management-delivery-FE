@@ -14,7 +14,6 @@ export default async function PageSlugTileset({ params }: { params: Promise<{ so
   if(!getNameZone){
     notFound()
   }
-  console.log(getNameZone)
   return (
     <Box>
       <Heading size={'xl'} fontWeight={'bold'}>

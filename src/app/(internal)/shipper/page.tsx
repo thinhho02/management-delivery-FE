@@ -1,9 +1,8 @@
-import React from 'react'
+import { redirect } from "next/navigation"
 
-const PageDashBoardShipper = () => {
-  return (
-    <div>PageDashBoardShipper</div>
-  )
+
+const Page = () => {
+  return redirect("/shipper/task")
 }
 
-export default PageDashBoardShipper
+export default Page

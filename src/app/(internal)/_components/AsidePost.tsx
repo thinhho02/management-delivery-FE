@@ -124,8 +124,8 @@ const AsidePost = () => {
                     <Drawer.Backdrop />
                     <Drawer.Positioner>
                         <Drawer.Content>
-                            <Drawer.Header pt={'16px'}>
-                                <HStack mb={7} w={'full'} justify={'space-between'}>
+                            <Drawer.Header pt={'16px'} flexDirection={'column'}>
+                                <HStack mb={1} w={'full'} justify={'space-between'}>
                                     <Box w={'216px'}>
                                         <HStack bg={'cyan.400/25'} flexShrink={1} w={'fit-content'} pr={3} borderRightRadius={'2xl'} borderTopLeftRadius={'1.5rem'} borderBottomLeftRadius={'1.5rem'}>
                                             <Avatar.Root size={'sm'}>
@@ -148,6 +148,11 @@ const AsidePost = () => {
                                         />
                                     </Box>
                                 </HStack>
+                                <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
+                                    <Skeleton loading={isLoading}>
+                                        {post.name}
+                                    </Skeleton>
+                                </Heading>
                             </Drawer.Header>
                             <Drawer.Body>
                                 <VStack align="start" spaceY={1} >

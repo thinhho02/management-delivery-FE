@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 const useSocket = () => {
     const [isConnected, setIsConnected] = useState<boolean>(false)
     useEffect(() => {
-        console.log(123)
         if (socketInstance.connected) {
             console.log(socketInstance.id)
             setIsConnected(true)

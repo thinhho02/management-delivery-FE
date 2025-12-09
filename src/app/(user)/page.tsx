@@ -33,7 +33,6 @@ export default function Page() {
   //     console.log(error)
   //   }
   // }, [])
-  console.log('đây là page (user)')
   return (
     <Container>
       <Header />

@@ -74,7 +74,6 @@ const FormReceiverOrder = memo(() => {
 
     useEffect(() => {
         if (!provinceId) return;
-        console.log(provinceId)
         const fetchListWardByProvince = async () => {
 
             const res = await get<any[]>(`/mapbox/ward/list/${provinceId.provinceId}`)
@@ -128,10 +127,8 @@ const FormReceiverOrder = memo(() => {
                 const longitude = feature.geometry.location.lng
                 const latitude = feature.geometry.location.lat
                 const lngLat = JSON.stringify({ longitude, latitude })
-                // console.log(lngLat)
                 valueAddress.push({ id, label, value, coordinates: lngLat })
             })
-            console.log(valueAddress)
             setAddress(valueAddress)
         } catch (error) {
             console.log(error)

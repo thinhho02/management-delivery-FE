@@ -278,7 +278,6 @@ const AddNewShipper = ({ setOpen }: Props) => {
                                             name={field.name}
                                             value={field.value || []}
                                             onValueChange={({ value }) => {
-                                                console.log(value)
                                                 field.onChange(value)
                                                 setValueTypePost(value)
                                             }}
@@ -326,7 +325,6 @@ const AddNewShipper = ({ setOpen }: Props) => {
                                                 // setZoneId(value[0])
                                             }}
                                             onInputValueChange={(details) => {
-                                                console.log(details)
                                                 filterPost(details.inputValue)
                                             }}
                                             onInteractOutside={() => field.onBlur()}
@@ -370,7 +368,6 @@ const AddNewShipper = ({ setOpen }: Props) => {
                                             name={field.name}
                                             value={field.value || []}
                                             onValueChange={({ value }) => {
-                                                console.log(value)
                                                 field.onChange(value)
                                                 setVehicleTypes(value)
                                             }}

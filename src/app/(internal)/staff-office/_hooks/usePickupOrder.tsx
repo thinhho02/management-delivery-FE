@@ -15,6 +15,7 @@ export type PrintedFilter = "all" | "printed" | "not_printed";
 export interface IUserInfo {
     name: string;
     phone: string;
+    address: string;
 }
 export interface IRouteStep {
     from: IPostOffice;
@@ -78,7 +79,7 @@ export const usePickupOrders = ({
     pick: string;
     postInfo: IPostOffice
 }) => {
-    const query = !postInfo._id ? null : `/order/${postInfo.type}/${postInfo._id}/${typeOffice}?status=${status}&pick=${pick}&page=${page}`;
+    const query = !postInfo._id ? null : `/order/${postInfo.type}/${postInfo._id}/${typeOffice}?status=${status || ""}&pick=${pick || ""}&page=${page || ""}`;
 
     const { data, error, isLoading, isValidating, mutate } = useSWR(
         query,

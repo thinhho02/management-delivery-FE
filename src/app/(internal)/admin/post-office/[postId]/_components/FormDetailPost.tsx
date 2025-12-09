@@ -105,8 +105,7 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
 
 
     const searchAddress = async (query: string) => {
-        console.log(query)
-        console.log(addressNumberRef.current?.value)
+
         if (query === '' || !addressNumberRef.current?.value) {
             setAddress([])
             return;
@@ -124,11 +123,9 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
                     const label = feature.properties.full_address
                     const value = feature.properties.full_address
                     const lngLat = JSON.stringify(feature.properties.coordinates)
-                    // console.log(lngLat)
                     valueAddress.push({ id, label, value, coordinates: lngLat })
                 }
             })
-            console.log(valueAddress)
             setAddress(valueAddress)
         } catch (error) {
             console.log(error)
@@ -150,7 +147,6 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
 
     const submitForm = handleSubmit(async (dataForm) => {
         if (!isDirty) return;
-        console.log(dataForm)
         const values: any = getValues();
         const changed: any = {};
 
@@ -178,7 +174,6 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
             const coordinates: { longitude: number, latitude: number } = JSON.parse(changed.lngLat)
             payload.location = [coordinates.longitude, coordinates.latitude]
         }
-        console.log(payload)
         const res = await update<{message: string}>(`/post-office/update/${post._id}`, payload)
         if(!res.success){
             toaster.error({
@@ -227,7 +222,6 @@ const FormDetailPost = ({ post, zoneDataDefault, onSuccess, lngLatPost }: Props)
                                                 name={field.name}
                                                 value={field.value || []}
                                                 onValueChange={({ value }) => {
-                                                    console.log(value)
                                                     field.onChange(value)
                                                     setValueType(value)
                                                 }}

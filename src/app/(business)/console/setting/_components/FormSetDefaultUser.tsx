@@ -158,7 +158,6 @@ const FormSetDefaultUser = ({ data, onSuccess }: { data: APIResponse<IUserDefaul
 
     useEffect(() => {
         if (!provinceId) return;
-        console.log(provinceId)
         const fetchListWardByProvince = async () => {
 
             const res = await get<any[]>(`/mapbox/ward/list/${provinceId.provinceId}`)
@@ -212,10 +211,8 @@ const FormSetDefaultUser = ({ data, onSuccess }: { data: APIResponse<IUserDefaul
                 const longitude = feature.geometry.location.lng
                 const latitude = feature.geometry.location.lat
                 const lngLat = JSON.stringify({ longitude, latitude })
-                // console.log(lngLat)
                 valueAddress.push({ id, label, value, coordinates: lngLat })
             })
-            console.log(valueAddress)
             setAddress(valueAddress)
         } catch (error) {
             console.log(error)
@@ -226,7 +223,6 @@ const FormSetDefaultUser = ({ data, onSuccess }: { data: APIResponse<IUserDefaul
 
     const submitForm = handleSubmit(async (dataForm) => {
 
-        console.log(dataForm)
         if (!lngLat) return;
         const coordinates: { longitude: number, latitude: number } = JSON.parse(lngLat)
         const location = [coordinates.longitude, coordinates.latitude]

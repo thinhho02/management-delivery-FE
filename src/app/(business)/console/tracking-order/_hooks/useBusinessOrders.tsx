@@ -2,6 +2,8 @@
 
 import useSWR from "swr";
 import { get } from "@/apis/apiCore";
+import { IUserInfo } from "@/app/(internal)/staff-office/_hooks/usePickupOrder";
+import { ShipmentEventType } from "@/components/ui/TimeLineShipment";
 
 export type OrderStatus = "pending" | "in_transit" | "delivered" | "cancelled";
 export type PrintedFilter = "all" | "printed" | "not_printed";
@@ -13,6 +15,21 @@ export interface IOrderOffice {
   address: string;
 }
 
+export interface IShipperDetail {
+  _id: string;
+  employeeId: IUserInfo
+}
+
+export interface IEventType {
+  eventType: ShipmentEventType,
+  note: string,
+  timestamp: string,
+  officeId: IOrderOffice,
+
+  shipperDetailId: IShipperDetail,
+
+}
+
 export interface IOrder {
   _id: string;
   orderCode: string;
@@ -20,9 +37,11 @@ export interface IOrder {
   shipFee: number;
   status: OrderStatus;
   printed: boolean;
-
+  pick: "pick_home" | "pick_post",
   pickupOffice: IOrderOffice | null;
   deliveryOffice: IOrderOffice | null;
+  customer: IUserInfo,
+  events: IEventType[]
 }
 
 export interface IOrderResponse {
@@ -36,14 +55,13 @@ export interface IOrderResponse {
 
 
 
-export const useBusinessOrders = ({ page, status, printed }: { page: number, status: string, printed: string }) => {
+export const useBusinessOrders = ({ page, pick, status, printed }: { page: number, pick?: string, status?: string, printed?: string }) => {
 
-  const query = `/order/business?status=${status}&printed=${printed}&page=${page}`;
-
+  const query = `/order/business?status=${status || ""}&printed=${printed || ""}&page=${page}&pick=${pick || ""}`;
+  
   const { data, error, isLoading, isValidating, mutate } = useSWR(query, get<IOrderResponse>, {
     revalidateOnFocus: false,
   });
-  console.log(error)
   const orders = data && data?.success ? data.result.orders : undefined // Trả về undefined nếu chưa có
   return {
     data: orders,

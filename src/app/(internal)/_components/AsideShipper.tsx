@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Flex, Heading, VStack, Icon, Drawer, Button, Portal, HStack, Avatar } from '@chakra-ui/react'
+import { Box, Flex, Heading, VStack, Icon, Drawer, Button, Portal, HStack, Avatar, Skeleton } from '@chakra-ui/react'
 import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
 import { RiArrowDropRightFill } from 'react-icons/ri'
@@ -9,14 +9,17 @@ import { ColorModeButton } from '@/components/ui/color-mode'
 import LinkCustom from '@/components/ui/LinkCustom'
 import { useUserInternal } from '@/app/(internal)/_providers/UserProviderInternal'
 import LogoutButtonInternal from './LogoutButtonInternal'
+import { useShipperInfo } from '../shipper/_provider/ShipperInfoProvider'
 
 
 const AsideShipper = () => {
     const { user } = useUserInternal()
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
+    const { data: post, isLoading } = useShipperInfo()
+
     const items = [
-        { value: "1", title: "Trang chủ", href: "/shipper" },
+        { value: "1", title: "Nhiệm vụ", href: "/shipper/task" },
         // { value: "2", title: "Khu vực hoạt động", href: "/post/map" },
         // { value: "3", title: "Quản lý bưu cục", href: "/post/post-office" },
         // { value: "4", title: "Quản lý nhân viên", href: "/post/employee" },
@@ -36,29 +39,36 @@ const AsideShipper = () => {
             >
                 <VStack justifyContent={'space-between'} h={'full'} pt={4} pb={5} px={5}>
                     <Flex direction={'column'}>
-                        <HStack mb={7} w={'full'} justify={'space-between'}>
-                            <Box w={'216px'}>
-                                <HStack bg={'cyan.400/25'} w={'fit-content'} pr={3} borderRightRadius={'2xl'} borderTopLeftRadius={'1.5rem'} borderBottomLeftRadius={'1.5rem'}>
-                                    <Avatar.Root size={'sm'}>
-                                        <Avatar.Fallback name={user.account.email} />
-                                        <Avatar.Image />
-                                    </Avatar.Root>
-                                    <Box w={'160px'}>
-                                        <Heading as="h4" size="sm" fontWeight={'bold'} wordSpacing={2} whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} >
-                                            {user.account.email}
-                                        </Heading>
-                                    </Box>
-                                </HStack>
-                            </Box>
-                            <Box>
-                                <ColorModeButton
+                        <Box mb={5}>
+                            <HStack w={'full'} justify={'space-between'}>
+                                <Box w={'216px'}>
+                                    <HStack bg={'cyan.400/25'} w={'fit-content'} pr={3} borderRightRadius={'2xl'} borderTopLeftRadius={'1.5rem'} borderBottomLeftRadius={'1.5rem'}>
+                                        <Avatar.Root size={'sm'}>
+                                            <Avatar.Fallback name={user.account.email} />
+                                            <Avatar.Image />
+                                        </Avatar.Root>
+                                        <Box w={'160px'}>
+                                            <Heading as="h4" size="sm" fontWeight={'bold'} wordSpacing={2} whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} >
+                                                {user.account.email}
+                                            </Heading>
+                                        </Box>
+                                    </HStack>
+                                </Box>
+                                <Box>
+                                    <ColorModeButton
 
-                                    _hover={{
-                                        bg: "gray.600/40"
-                                    }}
-                                />
-                            </Box>
-                        </HStack>
+                                        _hover={{
+                                            bg: "gray.600/40"
+                                        }}
+                                    />
+                                </Box>
+                            </HStack>
+                            <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
+                                <Skeleton loading={isLoading}>
+                                    {post.name}
+                                </Skeleton>
+                            </Heading>
+                        </Box>
 
                         <VStack align="start">
                             {items.map((item) => {
@@ -114,8 +124,8 @@ const AsideShipper = () => {
                     <Drawer.Backdrop />
                     <Drawer.Positioner>
                         <Drawer.Content>
-                            <Drawer.Header pt={'16px'}>
-                                <HStack mb={7} w={'full'} justify={'space-between'}>
+                            <Drawer.Header pt={'16px'} flexDirection={'column'}>
+                                <HStack mb={1} w={'full'} justify={'space-between'}>
                                     <Box w={'216px'}>
                                         <HStack bg={'cyan.400/25'} flexShrink={1} w={'fit-content'} pr={3} borderRightRadius={'2xl'} borderTopLeftRadius={'1.5rem'} borderBottomLeftRadius={'1.5rem'}>
                                             <Avatar.Root size={'sm'}>
@@ -138,6 +148,11 @@ const AsideShipper = () => {
                                         />
                                     </Box>
                                 </HStack>
+                                <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
+                                    <Skeleton loading={isLoading}>
+                                        {post.name}
+                                    </Skeleton>
+                                </Heading>
                             </Drawer.Header>
                             <Drawer.Body>
                                 <VStack align="start" spaceY={1} >

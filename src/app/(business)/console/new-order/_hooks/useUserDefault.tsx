@@ -51,7 +51,6 @@ const UserDefaultContext = createContext<UserDefaultContextType>({
 
 const UserDefaultProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: user, isLoading, isValidating, mutate } = useSWR(`/user/default`, get<IUserDefault>, { revalidateOnFocus: false })
-    console.log(user)
     const finalValue: UserDefaultContextType = {
         data: user && user.success ? user.result : UserDefaultPending,
         isLoading: isLoading || isValidating || !user,

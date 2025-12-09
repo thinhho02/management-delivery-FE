@@ -141,7 +141,6 @@ const ToasterNotifyBusiness = () => {
           action: {
             label: "Không phải tôi?",
             onClick: async () => {
-              console.log("Đang xử lý...");
               await create("/auth/logout_device_suspicious", { sessionSuspicious: payload.sid })
               console.log("Gửi API logout thiết bị đáng ngờ:", payload.sid);
             }

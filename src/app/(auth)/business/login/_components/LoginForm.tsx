@@ -49,8 +49,7 @@ const LoginForm = () => {
 
     const submitForm = handleSubmit(async (data) => {
         const finger = await getLiteFingerprint()
-        console.log(finger)
-        console.log(data)
+     
         const payload = {
             email: data.email,
             password: data.password,
@@ -69,7 +68,6 @@ const LoginForm = () => {
             })
             return { success: false, message: res.error }
         } else {
-            console.log(res)
             router.replace("/console")
         }
 

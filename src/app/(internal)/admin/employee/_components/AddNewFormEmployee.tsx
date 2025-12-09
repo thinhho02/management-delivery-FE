@@ -243,7 +243,6 @@ const AddNewEmployee = ({ setOpen }: Props) => {
                                             name={field.name}
                                             value={field.value || []}
                                             onValueChange={({ value }) => {
-                                                console.log(value)
                                                 field.onChange(value)
                                                 setValueType(value)
                                             }}
@@ -291,7 +290,6 @@ const AddNewEmployee = ({ setOpen }: Props) => {
                                                 // setZoneId(value[0])
                                             }}
                                             onInputValueChange={(details) => {
-                                                console.log(details)
                                                 filterPost(details.inputValue)
                                             }}
                                             onInteractOutside={() => field.onBlur()}

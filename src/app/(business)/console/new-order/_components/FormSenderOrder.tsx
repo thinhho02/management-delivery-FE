@@ -96,7 +96,6 @@ const FormSenderOrder = memo(({ user, isLoading }: Props) => {
         if (isLoading || !user.default || !email) return;
 
         // Nếu email thay đổi so với default
-        console.log("test", email === user.email)
         if (email === user.email) {
             setValue("senderCheckEmail", true);  // bắt user kiểm tra lại
             setCheckEmail(true);
@@ -254,10 +253,8 @@ const FormSenderOrder = memo(({ user, isLoading }: Props) => {
                 const longitude = feature.geometry.location.lng
                 const latitude = feature.geometry.location.lat
                 const lngLat = JSON.stringify({ longitude, latitude })
-                // console.log(lngLat)
                 valueAddress.push({ id, label, value, coordinates: lngLat })
             })
-            console.log(valueAddress)
             setAddress(valueAddress)
         } catch (error) {
             console.log(error)

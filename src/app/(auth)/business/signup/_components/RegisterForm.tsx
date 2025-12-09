@@ -155,7 +155,6 @@ const RegisterForm = () => {
         verify: verifyRegister.success
       }
       const res = await create<{ success: boolean }>("/auth/business/register", dataForm)
-      console.log(res)
       if (!res.success) {
 
         toaster.create({

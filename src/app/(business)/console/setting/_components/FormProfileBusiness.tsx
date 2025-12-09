@@ -75,7 +75,6 @@ const FormProfileBusiness = ({ user, mutateUser }: UserContextState) => {
                 name: pendingData.name,
                 password
             }
-            console.log(data)
             const res = await update<{ message: string, data: { email: string, name: string } }>("/business/update", data)
 
 

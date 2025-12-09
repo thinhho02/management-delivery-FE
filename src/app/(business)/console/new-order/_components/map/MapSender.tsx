@@ -62,7 +62,6 @@ const MapSender = memo(({ lngLat, setLngLat, setValue, wardId, setAddressMarker 
             features.map((feature: any) => {
                 // const label = `${feature.properties.name}, ${feature.properties.context.locality.name}, `
                 const value = feature.formatted_address
-                // console.log(lngLat)
                 setAddressMarker(value)
                 setValue("senderAddress", value,{ shouldDirty: true, shouldValidate: true })
             })
@@ -77,7 +76,6 @@ const MapSender = memo(({ lngLat, setLngLat, setValue, wardId, setAddressMarker 
         if (mapRef.current || !mapContainer.current) return;
 
         mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
-        console.log(process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!)
         const map = new mapboxgl.Map({
             container: mapContainer.current,
             style: "mapbox://styles/mapbox/streets-v12", // style sáng
@@ -108,8 +106,7 @@ const MapSender = memo(({ lngLat, setLngLat, setValue, wardId, setAddressMarker 
 
 
     useEffect(() => {
-        console.log(lngLat)
-        console.log(mapRef.current)
+
         if (!lngLat || !dataWard || !dataWard.success || !mapRef.current) return;
         const map = mapRef.current
         const coordinates: { longitude: number, latitude: number } = JSON.parse(lngLat)

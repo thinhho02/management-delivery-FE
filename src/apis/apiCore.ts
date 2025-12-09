@@ -31,7 +31,6 @@ export const get = async <T>(url: string, config?: AxiosRequestConfig): Promise<
 export const create = async <T>(url: string, data: FormData | Record<string, any>, config?: AxiosRequestConfig): Promise<APIResponse<T>> => {
     try {
         const res: AxiosResponse<T> = await API.post<T>(url, data, config);
-        console.log(res)
         return { success: true, result: res.data };
     } catch (error: any) {
         if (axios.isAxiosError(error)) {

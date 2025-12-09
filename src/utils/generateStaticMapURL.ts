@@ -59,10 +59,7 @@ export async function generateStaticMapURL({
         const key = matched.replace(/[{}]/g, ""); // z, x, y
         return String(mapObj[key]); // chuyển number thành string để replace hợp lệ
     });
-    console.log(path)
 
-    console.log("x:", x, "y:", y)
-    console.log(tileMedata)
     const bounds = tileMedata.bounds
     const layer =
     // {

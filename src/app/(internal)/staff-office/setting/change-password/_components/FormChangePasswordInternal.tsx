@@ -58,7 +58,6 @@ const FormChangePasswordInternal = () => {
         }
 
         const res = await update<{ message: string }>("/employee/change-password", { newPassword: dataForm.newPassword, currentPassword: dataForm.currentPassword })
-        console.log(res)
         if (!res.success) {
             toaster.create({
                 id: `Change-Pass-E-${Date.now}`,

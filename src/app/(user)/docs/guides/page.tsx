@@ -15,7 +15,6 @@ import { Tooltip } from '@/components/ui/tooltip';
 import LinkCustom from '@/components/ui/LinkCustom';
 
 const Page = () => {
-    console.log("đây là page guides")
     return (
         <Box ml={5} overflowX={'auto'} w={'full'}>
             <Box>

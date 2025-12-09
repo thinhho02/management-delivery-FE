@@ -116,7 +116,6 @@ export const columns = [
     cell: ({ row }) => {
       const item = row.original;
       const onDelete = (item: any) => {
-        console.log(item)
       }
       return (
         <>

@@ -33,7 +33,6 @@ export const SocketProviderInternal = ({ children }: { children: React.ReactNode
 
         socketInstance.on("connect", () => {
             console.log("Socket connected:", socketInstance.id);
-            console.log(user)
             socketInstance.emit("join:room_session", { sessionId: user.sid })
             setIsConnected(true);
         });

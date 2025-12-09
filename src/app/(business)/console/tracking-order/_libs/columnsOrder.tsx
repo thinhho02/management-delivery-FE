@@ -7,7 +7,8 @@ import {
     HStack,
     Box,
     Checkbox,
-    Badge
+    Badge,
+    Text
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { IOrder } from "../_hooks/useBusinessOrders";
@@ -90,6 +91,27 @@ export const OrderColumns = (selected: Record<string, boolean>, toggleOne: (id: 
         cell: info => info.getValue() || "—",
     }),
 
+    columnHelper.accessor("customer", {
+        header: "Người nhận",
+        cell: ({ row }) => {
+            const customer = row.original.customer;
+            if (!customer) return "—";
+            const tooltip = (
+                <>
+                    <b>{customer.name}</b> <br />
+                    Số điện thoại: {customer.phone} <br />
+                    Địa chỉ: {customer.address}
+                </>
+            );
+
+            return (
+                <Tooltip content={tooltip} showArrow>
+                    <Box color="blue.600" cursor="pointer">{customer.name}</Box>
+                </Tooltip>
+            );
+        }
+    }),
+
     // 🏣 Bưu cục nhận
     columnHelper.display({
         id: "pickupOffice",
@@ -146,6 +168,64 @@ export const OrderColumns = (selected: Record<string, boolean>, toggleOne: (id: 
         ),
     }),
 
+    columnHelper.accessor("pick", {
+        header: "Lấy hàng",
+        cell: info =>
+            info.getValue() === "pick_home" ? "Shipper lấy" : "Gửi tại bưu cục",
+    }),
+
+    columnHelper.display({
+        id: "shipperPickup",
+        header: "Shipper lấy hàng",
+        cell: ({ row }) => {
+            const events = row.original.events;
+            const shipperPick = events.find(e => e.eventType === "waiting_pickup")
+            if (!shipperPick) return "—";
+            const tooltip = (
+                <>
+                    <b>{shipperPick.shipperDetailId.employeeId.name}</b> <br />
+                    Số điện thoại: {shipperPick.shipperDetailId.employeeId.phone} <br />
+                </>
+            );
+
+            return (
+                <Tooltip content={tooltip} showArrow>
+                    <Box cursor="pointer" maxW={'170px'}>
+                        <Text truncate>
+                            {shipperPick.shipperDetailId.employeeId.name}
+                        </Text>
+                    </Box>
+                </Tooltip>
+            );
+        }
+    }),
+
+    columnHelper.display({
+        id: "shipperDelivery",
+        header: "Shipper giao hàng",
+        cell: ({ row }) => {
+            const events = row.original.events;
+            const shipperDelivery = events.find(e => e.eventType === "waiting_delivery")
+            if (!shipperDelivery) return "—";
+            const tooltip = (
+                <>
+                    <b>{shipperDelivery.shipperDetailId.employeeId.name}</b> <br />
+                    Số điện thoại: {shipperDelivery.shipperDetailId.employeeId.phone} <br />
+                </>
+            );
+
+            return (
+                <Tooltip content={tooltip} showArrow>
+                    <Box cursor="pointer" maxW={'170px'}>
+                        <Text truncate>
+                            {shipperDelivery.shipperDetailId.employeeId.name}
+                        </Text>
+                    </Box>
+                </Tooltip>
+            );
+        }
+    }),
+
     // 📌 Trạng thái đơn hàng
     columnHelper.accessor("status", {
         header: "Trạng thái",
@@ -172,17 +252,17 @@ export const OrderColumns = (selected: Record<string, boolean>, toggleOne: (id: 
 
     // 🖨 Trạng thái in
     columnHelper.accessor("printed", {
-            header: "In nhãn",
-            cell: info => {
-                const printed = info.getValue()
-                const color = printed ? "green" : "red"
+        header: "In nhãn",
+        cell: info => {
+            const printed = info.getValue()
+            const color = printed ? "green" : "red"
 
-                return (
-                    <Status.Root size={'sm'} colorPalette={color}>
-                        <Status.Indicator />
-                        {printed ? "Đã in" : "Chưa in"}
-                    </Status.Root>
-                )
-            },
-        }),
+            return (
+                <Status.Root size={'sm'} colorPalette={color}>
+                    <Status.Indicator />
+                    {printed ? "Đã in" : "Chưa in"}
+                </Status.Root>
+            )
+        },
+    }),
 ];

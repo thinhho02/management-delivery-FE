@@ -108,7 +108,7 @@ export default function TimelineRouteFull({
       {/* ========================== */}
       {/*       ROUTE PLAN LEFT      */}
       {/* ========================== */}
-      <GridItem pr={{ base: 0, md: 10 }}>
+      <GridItem pr={{ base: 0, md: 10 }} w={{ base: '320px', md: 'full' }}>
         <Text fontSize="lg" fontWeight="bold" mb={3}>
           HÀNH TRÌNH DỰ KIẾN
         </Text>
@@ -161,7 +161,7 @@ export default function TimelineRouteFull({
           HÀNH TRÌNH THỰC TẾ
         </Text>
 
-        <Timeline.Root size="md">
+        <Timeline.Root size="md" maxH={'240px'} overflowY={'auto'}>
           {events.map((ev, i) => {
             const mapping = EVENT_MAP[ev.eventType];
             const Icon = mapping.icon;

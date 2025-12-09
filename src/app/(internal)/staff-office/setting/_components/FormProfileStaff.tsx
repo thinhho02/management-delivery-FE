@@ -43,7 +43,6 @@ const FormProfileStaff = ({ user, mutateUser }: UserContextState) => {
 
 
     const submitForm = handleSubmit(async (dataForm) => {
-        console.log(dataForm)
         // if (user.account.email !== dataForm.email) {
         //     const verify = await verifyEmail(dataForm.email)
         //     if (!verify.status) {

@@ -113,11 +113,9 @@ const AddNewFormPost = memo(({ onSuccess }: Props) => {
                         const label = feature.properties.full_address
                         const value = feature.properties.full_address
                         const lngLat = JSON.stringify(feature.properties.coordinates)
-                        // console.log(lngLat)
                         valueAddress.push({ id, label, value, coordinates: lngLat })
                     }
                 })
-                console.log(valueAddress)
                 setAddress(valueAddress)
             } catch (error) {
                 console.log(error)
@@ -231,7 +229,6 @@ const AddNewFormPost = memo(({ onSuccess }: Props) => {
                                                             name={field.name}
                                                             value={field.value || []}
                                                             onValueChange={({ value }) => {
-                                                                console.log(value)
                                                                 field.onChange(value)
                                                                 setValueType(value)
                                                             }}

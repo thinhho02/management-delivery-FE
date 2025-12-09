@@ -32,10 +32,11 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { toaster } from "@/components/ui/toaster";
 import { create, update } from "@/apis/apiCore";
 import { PickupColumns } from "../_libs/columnsPickup";
-import { usePickupOrders } from "../_hooks/usePickupOrder";
+import { IPickupOrder, usePickupOrders } from "../_hooks/usePickupOrder";
 import ScanDialog from "./ScanDialog";
 import { DeliveryColumns } from "../_libs/columnsDelivery";
 import { IPostOffice } from "../_providers/PostInfoProvider";
+import { useSocketInternal } from "../../_providers/SocketProviderInternal";
 
 
 // ================================
@@ -67,14 +68,16 @@ const pickOptions = createListCollection({
 
 export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice: "inbound" | "outbound", postInfo: IPostOffice }) {
     const [page, setPage] = useState(1);
-    const [valueStatus, setValueStatus] = useState<string[]>([""]);
-    const [valuePick, setValuePick] = useState<string[]>([""]);
+    const [valueStatus, setValueStatus] = useState<string[]>([]);
+    const [valuePick, setValuePick] = useState<string[]>([]);
 
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const [searchText, setSearchText] = useState("");
     const [isPending, startTransitrion] = useTransition();
 
     const [sorting, setSorting] = useState<SortingState>([]);
+    const { socket, isConnected } = useSocketInternal()
+
     const { contains } = useFilter({ sensitivity: "base" });
     // ================================
     // FETCH API
@@ -86,6 +89,34 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
         pick: valuePick[0],
         postInfo
     });
+
+    useEffect(() => {
+        if (!isConnected) return;
+        const updateOrder = (payload: IPickupOrder) => {
+            mutate(prev => {
+                if (!prev?.success) return prev;
+
+                const updatedRows = prev.result.orders.map(o => {
+
+                    return o._id == payload._id ? { ...o, ...payload } : o;
+                });
+
+                return {
+                    ...prev,
+                    result: {
+                        ...prev.result,
+                        orders: updatedRows
+                    }
+                };
+            }, false);
+        }
+
+        socket.on("order:update", updateOrder)
+
+        return () => {
+            socket.off("order:update", updateOrder)
+        }
+    }, [isConnected])
 
     // Reset checkbox khi thay đổi filter
     useEffect(() => {
@@ -120,7 +151,7 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
                 contains(item.trackingCode ?? "", lower)
             );
         });
-    }, [data, searchText, contains]);
+    }, [data, searchText]);
 
     const table = useReactTable({
         data: tableData,
@@ -134,7 +165,6 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
     // ================================
     const handlePrintBulk = (selectedOrders: any[], canPrint: boolean) => {
         if (!canPrint) return;
-        console.log(selectedOrders)
 
         // startPrint(async () => {
         //     const ids = selectedOrders.map((o) => o._id);
@@ -165,7 +195,6 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
     // HANDLE CANCEL
     // ================================
     const handleArrangeTransport = (selectedOrders: any[]) => {
-        console.log(selectedOrders)
         startTransitrion(async () => {
             const ids = selectedOrders.map((o) => o._id);
 
@@ -181,7 +210,6 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
             }
 
             const { arranged, failed } = res.result;
-            console.log(arranged, failed)
             if (failed.length > 0) {
                 const reason = failed.map((f: any) => f.reason)
                 toaster.error({
@@ -246,6 +274,7 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
                                     <Select.ValueText placeholder="Trạng thái đơn" />
                                 </Select.Trigger>
                                 <Select.IndicatorGroup>
+                                    <Select.ClearTrigger />
                                     <Select.Indicator />
                                 </Select.IndicatorGroup>
                             </Select.Control>
@@ -280,6 +309,7 @@ export default function PickupOrderTable({ typeOffice, postInfo }: { typeOffice:
                                     <Select.ValueText placeholder="Hình thức lấy hàng" />
                                 </Select.Trigger>
                                 <Select.IndicatorGroup>
+                                    <Select.ClearTrigger />
                                     <Select.Indicator />
                                 </Select.IndicatorGroup>
                             </Select.Control>

@@ -48,7 +48,6 @@ const MainPageSourceLayer = ({ sourceLayer, getNameZone }: { sourceLayer: string
       </Box>
     )
   }
-  console.log(tiles)
   if (!tiles?.success) {
     return <Heading>{tiles?.error}</Heading>
   }
