@@ -14,7 +14,7 @@ export type PrintedFilter = "all" | "printed" | "not_printed";
 
 export interface IUserInfo {
     name: string;
-    phone: string;
+    numberPhone: string;
     address: string;
 }
 export interface IRouteStep {

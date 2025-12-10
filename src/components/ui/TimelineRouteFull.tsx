@@ -37,22 +37,6 @@ const ROUTE_ICON: Record<string, any> = {
   delivery: LuTruck,
 };
 
-// ========= EVENT MAP =========
-const EVENT_ICON: Record<string, any> = {
-  created: LuFileCheck,
-  waiting_pickup: LuClock3,
-  pickup: LuPackageCheck,
-  arrival: LuPackage,
-  departure: LuTruck,
-  delivery_attempt: LuTriangleAlert,
-  delivered: LuCheck,
-  returned: LuRotateCcw,
-  cancelled: LuX,
-  lost: LuX,
-  damaged: LuX,
-};
-
-
 
 export const EVENT_MAP: Record<
   ShipmentEventType,
@@ -62,7 +46,8 @@ export const EVENT_MAP: Record<
   waiting_pickup: { label: "Đơn hàng đang chuẩn bị", icon: LuClock3 },
   pickup: { label: "Đã lấy hàng", icon: LuShip },
   arrival: { label: "Đến bưu cục", icon: LuPackage },
-  departure: { label: "Rời bưu cục", icon: LuTruck },
+  departure: { label: "Rời bưu cục", icon: LuPackage },
+  transferring: { label: "Đang chuyển tiếp bưu cục", icon: LuTruck },
   waiting_delivery: { label: "Đang trên đường giao", icon: LuTruck },
   delivery_attempt: { label: "Giao hàng thất bại", icon: LuTriangleAlert },
   delivered: { label: "Đã giao hàng", icon: LuCheck },

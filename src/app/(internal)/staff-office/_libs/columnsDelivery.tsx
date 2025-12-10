@@ -145,7 +145,7 @@ export const DeliveryColumns = (
                     <Box fontWeight="600" textAlign={'center'}>
                         {sender.name} <br />
                         <Span color={'gray'}>
-                            {sender.phone}
+                            {sender.numberPhone}
                         </Span>
                     </Box>
                 );
@@ -166,7 +166,7 @@ export const DeliveryColumns = (
                     <Box fontWeight="600" textAlign={'center'}>
                         {rc.name} <br />
                         <Span color={'gray'}>
-                            {rc.phone}
+                            {rc.numberPhone}
                         </Span>
                     </Box>
                 );

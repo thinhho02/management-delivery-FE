@@ -9,6 +9,7 @@ export type ShipmentEventType =
     | 'pickup'
     | 'arrival'
     | 'departure'
+    | 'transferring'
     | 'delivery_attempt'
     | 'waiting_delivery'
     | 'delivered'
@@ -26,7 +27,8 @@ export const EVENT_MAP: Record<
     waiting_pickup: { label: "Đơn hàng đang chuẩn bị", icon: LuClock3 },
     pickup: { label: "Đã lấy hàng", icon: LuShip },
     arrival: { label: "Đến bưu cục", icon: LuPackage },
-    departure: { label: "Rời bưu cục", icon: LuTruck },
+    departure: { label: "Rời bưu cục", icon: LuPackage },
+    transferring: {label: "Đang chuyển tiếp bưu cục", icon: LuTruck},
     waiting_delivery: { label: "Đang trên đường giao", icon: LuTruck },
     delivery_attempt: { label: "Giao hàng thất bại", icon: LuTriangleAlert },
     delivered: { label: "Đã giao hàng", icon: LuCheck },
@@ -76,13 +78,14 @@ const TimelineShipment = ({ order }: { order: ResponseDetailOrder }) => {
 
                             {/* Địa chỉ bưu cục */}
                             <Timeline.Description fontSize="xs">
-                                {ev.officeName || ""}
+                                {ev.officeId?.name || ""}
+                                {ev.shipperDetailId ? `${ev.shipperDetailId.employeeId.name} - ${ev.shipperDetailId.employeeId.numberPhone}` : ""}
                             </Timeline.Description>
 
                             {/* Note nếu có */}
-                            {ev.eventNote && (
+                            {ev.note && (
                                 <Text textStyle="sm" color="orange.600">
-                                    {ev.eventNote}
+                                    {ev.note}
                                 </Text>
                             )}
                         </Timeline.Content>

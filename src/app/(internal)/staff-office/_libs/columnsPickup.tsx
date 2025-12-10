@@ -34,6 +34,8 @@ export const getShipmentStatus = (status: ShipmentEventType) => {
             return { label: "Đã nhập kho", color: "blue" };
         case "departure":
             return { label: "Đã xuất kho", color: "teal" };
+        case "transferring":
+            return { label: "Đang chuyển tiếp", color: "purple" };
         case "waiting_delivery":
             return { label: "Đang giao hàng", color: "cyan.600" }
         case "delivery_attempt":
@@ -175,7 +177,7 @@ export const PickupColumns = (
                     <Box fontWeight="600" textAlign={'center'}>
                         {sender.name} <br />
                         <Span color={'gray'}>
-                            {sender.phone}
+                            {sender.numberPhone}
                         </Span>
                     </Box>
                 );
@@ -196,7 +198,7 @@ export const PickupColumns = (
                     <Box fontWeight="600" textAlign={'center'}>
                         {rc.name} <br />
                         <Span color={'gray'}>
-                            {rc.phone}
+                            {rc.numberPhone}
                         </Span>
                     </Box>
                 );

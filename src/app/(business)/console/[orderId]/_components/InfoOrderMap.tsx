@@ -66,7 +66,7 @@ const InfoOrderMap = memo(({ order }: { order: ResponseDetailOrder }) => {
 
         new mapboxgl.Marker({ color: "#0004ffff" })
           .setLngLat(customer)
-          .setPopup(new mapboxgl.Popup().setHTML(`<b style="color: black">Người nhận</b>`))
+          .setPopup(new mapboxgl.Popup({closeButton: false}).setHTML(`<b style="color: black">Người nhận</b>`))
           .addTo(map);
 
       

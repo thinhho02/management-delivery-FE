@@ -99,7 +99,7 @@ export const OrderColumns = (selected: Record<string, boolean>, toggleOne: (id: 
             const tooltip = (
                 <>
                     <b>{customer.name}</b> <br />
-                    Số điện thoại: {customer.phone} <br />
+                    Số điện thoại: {customer.numberPhone} <br />
                     Địa chỉ: {customer.address}
                 </>
             );
@@ -174,57 +174,57 @@ export const OrderColumns = (selected: Record<string, boolean>, toggleOne: (id: 
             info.getValue() === "pick_home" ? "Shipper lấy" : "Gửi tại bưu cục",
     }),
 
-    columnHelper.display({
-        id: "shipperPickup",
-        header: "Shipper lấy hàng",
-        cell: ({ row }) => {
-            const events = row.original.events;
-            const shipperPick = events.find(e => e.eventType === "waiting_pickup")
-            if (!shipperPick) return "—";
-            const tooltip = (
-                <>
-                    <b>{shipperPick.shipperDetailId.employeeId.name}</b> <br />
-                    Số điện thoại: {shipperPick.shipperDetailId.employeeId.phone} <br />
-                </>
-            );
+    // columnHelper.display({
+    //     id: "shipperPickup",
+    //     header: "Shipper lấy hàng",
+    //     cell: ({ row }) => {
+    //         const events = row.original.events;
+    //         const shipperPick = events.find(e => e.eventType === "waiting_pickup")
+    //         if (!shipperPick) return "—";
+    //         const tooltip = (
+    //             <>
+    //                 <b>{shipperPick.shipperDetailId.employeeId.name}</b> <br />
+    //                 Số điện thoại: {shipperPick.shipperDetailId.employeeId.phone} <br />
+    //             </>
+    //         );
 
-            return (
-                <Tooltip content={tooltip} showArrow>
-                    <Box cursor="pointer" maxW={'170px'}>
-                        <Text truncate>
-                            {shipperPick.shipperDetailId.employeeId.name}
-                        </Text>
-                    </Box>
-                </Tooltip>
-            );
-        }
-    }),
+    //         return (
+    //             <Tooltip content={tooltip} showArrow>
+    //                 <Box cursor="pointer" maxW={'170px'}>
+    //                     <Text truncate>
+    //                         {shipperPick.shipperDetailId.employeeId.name}
+    //                     </Text>
+    //                 </Box>
+    //             </Tooltip>
+    //         );
+    //     }
+    // }),
 
-    columnHelper.display({
-        id: "shipperDelivery",
-        header: "Shipper giao hàng",
-        cell: ({ row }) => {
-            const events = row.original.events;
-            const shipperDelivery = events.find(e => e.eventType === "waiting_delivery")
-            if (!shipperDelivery) return "—";
-            const tooltip = (
-                <>
-                    <b>{shipperDelivery.shipperDetailId.employeeId.name}</b> <br />
-                    Số điện thoại: {shipperDelivery.shipperDetailId.employeeId.phone} <br />
-                </>
-            );
+    // columnHelper.display({
+    //     id: "shipperDelivery",
+    //     header: "Shipper giao hàng",
+    //     cell: ({ row }) => {
+    //         const events = row.original.events;
+    //         const shipperDelivery = events.find(e => e.eventType === "waiting_delivery")
+    //         if (!shipperDelivery) return "—";
+    //         const tooltip = (
+    //             <>
+    //                 <b>{shipperDelivery.shipperDetailId.employeeId.name}</b> <br />
+    //                 Số điện thoại: {shipperDelivery.shipperDetailId.employeeId.phone} <br />
+    //             </>
+    //         );
 
-            return (
-                <Tooltip content={tooltip} showArrow>
-                    <Box cursor="pointer" maxW={'170px'}>
-                        <Text truncate>
-                            {shipperDelivery.shipperDetailId.employeeId.name}
-                        </Text>
-                    </Box>
-                </Tooltip>
-            );
-        }
-    }),
+    //         return (
+    //             <Tooltip content={tooltip} showArrow>
+    //                 <Box cursor="pointer" maxW={'170px'}>
+    //                     <Text truncate>
+    //                         {shipperDelivery.shipperDetailId.employeeId.name}
+    //                     </Text>
+    //                 </Box>
+    //             </Tooltip>
+    //         );
+    //     }
+    // }),
 
     // 📌 Trạng thái đơn hàng
     columnHelper.accessor("status", {

@@ -8,6 +8,7 @@ import { LuMapPin } from 'react-icons/lu'
 import { formatDateVN } from '@/utils/formatDateVN'
 import dynamic from 'next/dynamic'
 import TimelineShipment from '@/components/ui/TimeLineShipment'
+import TrackingOrderMap from './TrackingOrderMap'
 const InfoOrderMap = dynamic(() => import('./InfoOrderMap'))
 
 interface Props {
@@ -84,7 +85,7 @@ const InfoOrderDetailBusiness = ({ order, onSuccess }: Props) => {
 
                 {/* RIGHT SIDE: Map */}
                 <Box >
-                    <InfoOrderMap order={order} />
+                    <TrackingOrderMap order={order} />
                 </Box>
             </Grid>
 
@@ -126,7 +127,7 @@ const InfoOrderDetailBusiness = ({ order, onSuccess }: Props) => {
              TRACKING TIMELINE
       ========================= */}
             <Box mt={8} p={5} bg="bg.muted" rounded="md">
-                <Heading size="md" mb={3}>Lịch sử vận chuyển</Heading>
+                <Heading size="md" mb={3}>Hành trình vận chuyển</Heading>
 
                 <TimelineShipment order={order} />
             </Box>

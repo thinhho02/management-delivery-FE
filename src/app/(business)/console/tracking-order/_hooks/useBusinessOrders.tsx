@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { get } from "@/apis/apiCore";
 import { IUserInfo } from "@/app/(internal)/staff-office/_hooks/usePickupOrder";
 import { ShipmentEventType } from "@/components/ui/TimeLineShipment";
+import { Point } from "geojson";
 
 export type OrderStatus = "pending" | "in_transit" | "delivered" | "cancelled";
 export type PrintedFilter = "all" | "printed" | "not_printed";
@@ -13,10 +14,14 @@ export interface IOrderOffice {
   name: string;
   code: string;
   address: string;
+  location: Point;
 }
 
 export interface IShipperDetail {
   _id: string;
+  vehicleType: string;
+  status: boolean,
+  location: Point,
   employeeId: IUserInfo
 }
 
@@ -24,9 +29,9 @@ export interface IEventType {
   eventType: ShipmentEventType,
   note: string,
   timestamp: string,
-  officeId: IOrderOffice,
+  officeId?: IOrderOffice,
 
-  shipperDetailId: IShipperDetail,
+  shipperDetailId?: IShipperDetail,
 
 }
 
@@ -58,7 +63,7 @@ export interface IOrderResponse {
 export const useBusinessOrders = ({ page, pick, status, printed }: { page: number, pick?: string, status?: string, printed?: string }) => {
 
   const query = `/order/business?status=${status || ""}&printed=${printed || ""}&page=${page}&pick=${pick || ""}`;
-  
+
   const { data, error, isLoading, isValidating, mutate } = useSWR(query, get<IOrderResponse>, {
     revalidateOnFocus: false,
   });
