@@ -6,11 +6,11 @@ import PickupOrderTable from './PickupOrderTable'
 import { usePostInfo } from '../_providers/PostInfoProvider'
 
 const MainPage = () => {
-    const { data: postInfo, isLoading } = usePostInfo()
+    const { post: postInfo } = usePostInfo()
 
     return (
         <Tabs.Root
-            lazyMount 
+            lazyMount
             unmountOnExit
             defaultValue="inbound"
             variant="plain"
@@ -25,24 +25,14 @@ const MainPage = () => {
                 <Tabs.Trigger value="outbound">Đơn hàng giao</Tabs.Trigger>
                 <Tabs.Indicator />
             </Tabs.List>
-            {isLoading ?
-                (
-                    <Box mt={10}>
-                        <Center>
-                            <Spinner size={'sm'} />
-                        </Center>
-                    </Box>
-                ) :
-                (
-                    <>
-                        <Tabs.Content value="inbound">
-                            <PickupOrderTable typeOffice='inbound' postInfo={postInfo} />
-                        </Tabs.Content>
-                        <Tabs.Content value="outbound">
-                            <PickupOrderTable typeOffice='outbound' postInfo={postInfo} />
-                        </Tabs.Content>
-                    </>
-                )}
+
+            <Tabs.Content value="inbound">
+                <PickupOrderTable typeOffice='inbound' postInfo={postInfo} />
+            </Tabs.Content>
+            <Tabs.Content value="outbound">
+                <PickupOrderTable typeOffice='outbound' postInfo={postInfo} />
+            </Tabs.Content>
+
         </Tabs.Root>
     )
 }

@@ -49,7 +49,7 @@ const statusOptions = createListCollection({
         { label: "Đã lấy hàng", value: "pickup" },
         { label: "Đã nhập kho", value: "arrival" },
         { label: "Đã xuất kho", value: "departure" },
-        { label: "Đang chuyển tiếp", value: "transferring"},
+        { label: "Đang chuyển tiếp", value: "transferring" },
         { label: "Đang giao hàng", value: "waiting_delivery" },
         { label: "Giao thất bại", value: "delivery_attempt" },
         { label: "Giao thành công", value: "delivered" },

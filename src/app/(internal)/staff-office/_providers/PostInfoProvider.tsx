@@ -48,47 +48,34 @@ const PostOfficePending: IPostOffice = {
 };
 
 export interface PostOfficeContextType {
-    data: IPostOffice;
-    isLoading: boolean;
+    post: IPostOffice;
 }
 
 const PostInfoContext = createContext<PostOfficeContextType>({
-    data: PostOfficePending,
-    isLoading: true,
+    post: PostOfficePending,
 });
 
 const PostInfo = ({ children }: { children: React.ReactNode }) => {
     const { user } = useUserInternal()
     const { isConnected, emitEvent } = useSocketInternal()
-    const { data, isLoading } = useSWR(
-        `/post-office/${user.account.officeId}`,
-        get<IPostOffice>,
-        {
-            revalidateOnFocus: false,
-            shouldRetryOnError: false,
-            revalidateOnMount: true
-        }
-    );
-    if (!isLoading && data && !data.success) {
-        notFound();
-    }
-    useEffect(() => {
-        if (!data || !data.success || !isConnected) return;
 
-        emitEvent("join:post_join", { postId: data.result._id })
+
+    const post: IPostOffice = user.account.officeId
+
+    useEffect(() => {
+        if (!post || !isConnected) return;
+
+        emitEvent("join:post_join", { postId: post._id })
 
         return () => {
-            emitEvent("leave:post_join", { postId: data.result._id })
+            emitEvent("leave:post_join", { postId: post._id })
         }
-    }, [data, isConnected])
+    }, [post, isConnected])
 
-    const finalValue: PostOfficeContextType = {
-        data: data && data.success ? data.result : PostOfficePending,
-        isLoading: isLoading || !data,
-    };
+
 
     return (
-        <PostInfoContext.Provider value={finalValue}>
+        <PostInfoContext.Provider value={{post}}>
             {children}
         </PostInfoContext.Provider>
     )

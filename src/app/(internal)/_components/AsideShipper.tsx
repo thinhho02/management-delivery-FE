@@ -16,7 +16,7 @@ const AsideShipper = () => {
     const { user } = useUserInternal()
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
-    const { data: post, isLoading } = useShipperInfo()
+    const { post } = useShipperInfo()
 
     const items = [
         { value: "1", title: "Nhiệm vụ", href: "/shipper/task" },
@@ -64,9 +64,7 @@ const AsideShipper = () => {
                                 </Box>
                             </HStack>
                             <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
-                                <Skeleton loading={isLoading}>
-                                    {post.name}
-                                </Skeleton>
+                                {post.name}
                             </Heading>
                         </Box>
 
@@ -149,9 +147,7 @@ const AsideShipper = () => {
                                     </Box>
                                 </HStack>
                                 <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
-                                    <Skeleton loading={isLoading}>
-                                        {post.name}
-                                    </Skeleton>
+                                    {post.name}
                                 </Heading>
                             </Drawer.Header>
                             <Drawer.Body>

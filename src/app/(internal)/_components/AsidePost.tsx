@@ -14,7 +14,7 @@ import { usePostInfo } from '../staff-office/_providers/PostInfoProvider'
 
 const AsidePost = () => {
     const { user } = useUserInternal()
-    const { data: post, isLoading } = usePostInfo()
+    const { post } = usePostInfo()
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
     const items = [
@@ -64,9 +64,7 @@ const AsidePost = () => {
                                 </Box>
                             </HStack>
                             <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
-                                <Skeleton loading={isLoading}>
-                                    {post.name}
-                                </Skeleton>
+                                {post.name}
                             </Heading>
                         </Box>
 
@@ -149,9 +147,7 @@ const AsidePost = () => {
                                     </Box>
                                 </HStack>
                                 <Heading size={'md'} fontWeight={'medium'} mt={4} textAlign={'center'}>
-                                    <Skeleton loading={isLoading}>
-                                        {post.name}
-                                    </Skeleton>
+                                    {post.name}
                                 </Heading>
                             </Drawer.Header>
                             <Drawer.Body>

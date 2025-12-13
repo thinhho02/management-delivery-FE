@@ -6,32 +6,27 @@ import { useUserInternal } from "../../_providers/UserProviderInternal";
 import { get } from "@/apis/apiCore";
 import { notFound } from "next/navigation";
 import { useSocketInternal } from "../../_providers/SocketProviderInternal";
+import { IPostOffice } from "../../staff-office/_providers/PostInfoProvider";
+import { Point } from "geojson";
+import { updateShipperLocation } from "../_utils/locationShipper";
 
-export interface IZoneInfo {
+
+
+export interface IEmployee {
     _id: string;
     name: string;
-    code: string;
+    email: string;
+    numberPhone: string;
 }
 
-export interface IParentPost {
-    _id: string;
-    name: string;
-    code: string;
-    address: string;
-    type: "sorting_center" | "distribution_hub" | "delivery_office";
-}
 
-export interface IPostOffice {
+export interface IShipper {
     _id: string;
-    name: string;
-    code: string;
-    type: "sorting_center" | "distribution_hub" | "delivery_office";
-    address: string;
+    shipperZoneId: string | null;
+    employeeId: IEmployee | null;
+    vehicleType: "bike" | "truck" | null;
     status: boolean;
-    regionId?: IZoneInfo | null;
-    provinceId?: IZoneInfo | null;
-    wardId?: IZoneInfo | null;
-    parentId: IParentPost | null
+    location: Point | null
 }
 
 const PostOfficePending: IPostOffice = {
@@ -47,54 +42,87 @@ const PostOfficePending: IPostOffice = {
     parentId: null
 };
 
-export interface PostOfficeContextType {
-    data: IPostOffice;
-    isLoading: boolean;
+const ShipperPending: IShipper = {
+    _id: "",
+    shipperZoneId: null,
+    employeeId: null,
+    vehicleType: null,
+    status: false,
+    location: null
 }
 
-const PostInfoContext = createContext<PostOfficeContextType>({
-    data: PostOfficePending,
-    isLoading: true,
+export interface ShipperInfoContextType {
+    post: IPostOffice;
+    shipper: IShipper;
+}
+
+const ShipperInfoContext = createContext<ShipperInfoContextType>({
+    post: PostOfficePending,
+    shipper: ShipperPending
 });
+
+
 const ShipperInfoProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useUserInternal()
     const { isConnected, emitEvent } = useSocketInternal()
-    const { data, isLoading } = useSWR(
-        `/post-office/${user.account.officeId}`,
-        get<IPostOffice>,
+    const { data, isLoading, mutate } = useSWR(
+        `/shipper/employee`,
+        get<IShipper>,
         {
             revalidateOnFocus: false,
             shouldRetryOnError: false,
             revalidateOnMount: true
         }
     );
-    if (!isLoading && data && !data.success) {
+    if (data && !data.success) {
         notFound();
     }
 
     useEffect(() => {
         if (!data || !data.success || !isConnected) return;
 
-        emitEvent("join:shipper_join", { shipperId: user.account._id })
+        emitEvent("join:shipper_join", { shipperId: data.result._id })
 
         return () => {
-            emitEvent("leave:shipper_join", { postId: user.account._id })
+            emitEvent("leave:shipper_join", { shipperId: data.result._id })
         }
     }, [data, isConnected])
-    const finalValue: PostOfficeContextType = {
-        data: data && data.success ? data.result : PostOfficePending,
-        isLoading: isLoading || !data,
-    };
+
+    useEffect(() => {
+        if (!data?.success || !isConnected) return;
+
+        const shipperId = data.result._id;
+
+        // ✅ Update ngay khi login
+        updateShipperLocation(shipperId);
+
+        // 🔁 Update mỗi 5 phút
+        const interval = setInterval(() => {
+            updateShipperLocation(shipperId);
+        }, 5 * 60 * 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, [data, isConnected]);
+    
+
+    const post: IPostOffice = user.account.officeId
+
+    const value = useMemo<ShipperInfoContextType>(() => ({
+        shipper: data?.success ? data.result : ShipperPending,
+        post
+    }), [data, post]);
 
     return (
-        <PostInfoContext.Provider value={finalValue}>
+        <ShipperInfoContext.Provider value={value}>
             {children}
-        </PostInfoContext.Provider>
+        </ShipperInfoContext.Provider>
     )
 }
 
 export function useShipperInfo() {
-    const u = useContext(PostInfoContext)
+    const u = useContext(ShipperInfoContext)
     if (!u) {
         throw new Error("UserContext must be used inside <UserProviderInternal>");
     }
