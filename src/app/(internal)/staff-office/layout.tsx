@@ -4,6 +4,14 @@ import { SocketProviderInternal } from '../_providers/SocketProviderInternal';
 import ToasterNotifyInternal from '../_components/ToasterNotifyInternal';
 import AsidePost from '../_components/AsidePost';
 import PostInfo from './_providers/PostInfoProvider';
+import { Metadata } from 'next';
+
+
+export const metadata: Metadata = {
+  title: "Bưu cục",
+  description: "Trang bưu cục",
+};
+
 
 const RootLayoutPostOffice = ({
     children,
