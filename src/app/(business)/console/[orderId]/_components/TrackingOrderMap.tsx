@@ -162,7 +162,10 @@ export default function TrackingOrderMap({ order }: { order: ResponseDetailOrder
     useEffect(() => {
         const map = mapRef.current;
         if (!map || !seller || !customer || !pos) return;
-
+        map.removeSource("route-blue")
+        map.removeLayer("route-blue");
+        map.removeSource("route-gray")
+        map.removeLayer("route-gray");
 
         const fetchDirection = async () => {
 
@@ -231,14 +234,10 @@ export default function TrackingOrderMap({ order }: { order: ResponseDetailOrder
             fetchDirection().catch(err => console.log(err))
         })
         return () => {
-            if (map.getLayer("route-blue")) {
-                map.removeSource("route-blue")
-                map.removeLayer("route-blue");
-            }
-            if (map.getLayer("route-gray")) {
-                map.removeSource("route-gray")
-                map.removeLayer("route-gray");
-            }
+            map.removeSource("route-blue")
+            map.removeLayer("route-blue");
+            map.removeSource("route-gray")
+            map.removeLayer("route-gray");
         }
     }, [pos, seller, customer])
 
