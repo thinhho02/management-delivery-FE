@@ -162,10 +162,6 @@ export default function TrackingOrderMap({ order }: { order: ResponseDetailOrder
     useEffect(() => {
         const map = mapRef.current;
         if (!map || !seller || !customer || !pos) return;
-        map.removeSource("route-blue")
-        map.removeLayer("route-blue");
-        map.removeSource("route-gray")
-        map.removeLayer("route-gray");
 
         const fetchDirection = async () => {
 
