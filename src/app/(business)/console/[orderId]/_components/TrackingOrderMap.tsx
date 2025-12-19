@@ -229,12 +229,6 @@ export default function TrackingOrderMap({ order }: { order: ResponseDetailOrder
         map.on("style.load", () => {
             fetchDirection().catch(err => console.log(err))
         })
-        return () => {
-            map.removeSource("route-blue")
-            map.removeLayer("route-blue");
-            map.removeSource("route-gray")
-            map.removeLayer("route-gray");
-        }
     }, [pos, seller, customer])
 
     // -----------------------------------------------
