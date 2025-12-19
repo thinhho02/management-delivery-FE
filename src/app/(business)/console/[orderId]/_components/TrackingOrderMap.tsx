@@ -231,11 +231,11 @@ export default function TrackingOrderMap({ order }: { order: ResponseDetailOrder
             fetchDirection().catch(err => console.log(err))
         })
         return () => {
-            if (map.getSource("route-blue")) {
+            if (map.getLayer("route-blue")) {
                 map.removeSource("route-blue")
                 map.removeLayer("route-blue");
             }
-            if (map.getSource("route-gray")) {
+            if (map.getLayer("route-gray")) {
                 map.removeSource("route-gray")
                 map.removeLayer("route-gray");
             }
